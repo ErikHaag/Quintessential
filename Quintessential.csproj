@@ -45,6 +45,9 @@
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\MonoMod.Utils.dll</HintPath>
       <CopyLocal>False</CopyLocal>
     </Reference>
+    <Reference Include="MonoMod.RuntimeDetour">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\MonoMod.RuntimeDetour.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
