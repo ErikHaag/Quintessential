@@ -14,30 +14,9 @@ using System;
 
 class patch_MoleculeEditorScreen{
 
-	private static ILHook method_50_hook;
 	internal patch_Puzzle editing;
-	internal byte page = 0;
-	
-	public void create_method_50_hook() {
-		method_50_hook = new(typeof(patch_MoleculeEditorScreen).GetMethod("orig_method_50"), DrawAtomsHook);
-	}
-
-	private static void DrawAtomsHook(ILContext hook)
-	{
-		ILCursor cursor = new(hook);
-		if (!cursor.TryGotoNext(MoveType.Before,
-			x => x.MatchLdarg(0),
-			x => x.MatchLdloc(7),
-			x => x.MatchLdfld(out _),
-			x => x.MatchLdcI4(1),
-			x => x.MatchCallvirt("ModdedLightning.MoleculeEditorScreen", "method_1130")
-		))
-		{
-			throw new Exception("MoleculeEditorScreen does not contain the specified pattern!");
-		}
-		Quintessential.Logger.Log(cursor.Index);
-	}
-
+    internal byte page = 0;
+    
     public extern void orig_method_50(float param);
 	public void method_50(float param) {
 		orig_method_50(param);

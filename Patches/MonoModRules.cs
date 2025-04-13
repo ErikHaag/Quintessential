@@ -4,6 +4,7 @@ using MonoMod.Cil;
 using MonoMod.InlineRT;
 using System;
 using System.Linq;
+using YamlDotNet.Core;
 
 namespace MonoMod;
 
@@ -18,6 +19,9 @@ class PatchScoreManagerLoad : Attribute{}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchGifRecorderFrame))]
 class PatchGifRecorderFrame : Attribute{}
+
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchMoleculeEditorScreen))]
+class PatchMoleculeEditorScreen : Attribute{}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchPuzzleEditorScreen))]
 class PatchPuzzleEditorScreen : Attribute{}
@@ -108,6 +112,35 @@ static class MonoModRules{
 			throw new Exception();
 		}
 	}
+
+	public static void PatchMoleculeEditorScreen(MethodDefinition method, CustomAttribute attrib)
+	{
+		MonoModRule.Modder.Log("Patching molecule editor screen");
+		if (method.HasBody)
+		{
+			ILCursor cursor = new(new ILContext(method));
+			if (cursor.TryGotoNext(MoveType.Before,
+				x => x.MatchLdarg(0),
+				x => x.MatchLdloc(7),
+				x => x.MatchLdfld(out _),
+				x => x.MatchLdcI4(1),
+				x => x.MatchCallvirt("ModdedLightning.MoleculeEditorScreen", "method_1130")
+			))
+			{
+				Console.WriteLine(cursor.Index);
+			}
+			else
+			{
+				Console.WriteLine("Failed to modify molecule editor rendering (no match)!");
+				throw new Exception();
+			}
+		}
+		else {
+			Console.WriteLine("Failed to modify molecule editor rendering (no body)!");
+            throw new Exception();
+        }
+
+    }
 
 	public static void PatchPuzzleEditorScreen(MethodDefinition method, CustomAttribute attrib) {
 		MonoModRule.Modder.Log("Patching puzzle editor screen");
