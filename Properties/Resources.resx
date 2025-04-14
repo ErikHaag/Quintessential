@@ -139,4 +139,16 @@
   <data name="vertical_bar_centre_tall.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Content\vertical_bar_centre_tall.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="editor_go_left.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Content\editor_go_left.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="editor_go_left_hover.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Content\editor_go_left_hover.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="editor_go_right.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Content\editor_go_right.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="editor_go_right_hover.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Content\editor_go_right_hover.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

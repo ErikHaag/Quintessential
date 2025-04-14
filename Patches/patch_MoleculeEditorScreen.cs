@@ -20,10 +20,10 @@ class patch_MoleculeEditorScreen
 {
 
     internal patch_Puzzle editing;
-    private static readonly Texture prevAtoms = class_235.method_615("Quintessential/journal_go_left");
-    private static readonly Texture prevAtomsHover = class_235.method_615("Quintessential/journal_go_left_hover");
-    private static readonly Texture nextAtoms = class_235.method_615("Quintessential/journal_go_right");
-    private static readonly Texture nextAtomsHover = class_235.method_615("Quintessential/journal_go_right_hover");
+    private static readonly Texture prevAtoms = class_235.method_615("Quintessential/editor_go_left");
+    private static readonly Texture prevAtomsHover = class_235.method_615("Quintessential/editor_go_left_hover");
+    private static readonly Texture nextAtoms = class_235.method_615("Quintessential/editor_go_right");
+    private static readonly Texture nextAtomsHover = class_235.method_615("Quintessential/editor_go_right_hover");
     public static int currentPage = 0;
 
     [PatchMoleculeEditorScreen]
@@ -38,15 +38,15 @@ class patch_MoleculeEditorScreen
         }
         Vector2 uiSize = new(1516f, 922f);
         Vector2 corner = (Input.ScreenSize() / 2 - uiSize / 2 + new Vector2(-2f, -11f)).Rounded();
-        Vector2 offset = new(84f, 812f);
+        Vector2 offset = new(90f, 310f);
         Vector2 lPos = corner + offset;
-        Vector2 rPos = corner + offset + new Vector2(104f, 0f);
+        Vector2 rPos = corner + offset + new Vector2(91f, 0f);
         bool inLeftBound = Bounds2.WithSize(lPos, prevAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         bool inRightBound = Bounds2.WithSize(rPos, nextAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         UI.DrawTexture(inLeftBound ? prevAtomsHover : prevAtoms, lPos);
         UI.DrawTexture(inRightBound ? nextAtomsHover : nextAtoms, rPos);
         int pages = (byte)(1 + (Quintessential.QApi.ModAtomTypes.Count + 14) / 15);
-        UI.DrawText($"{currentPage + 1}/{pages}", corner + offset + new Vector2(73f, 12f), UI.Text, UI.TextColor, TextAlignment.Centred);
+        UI.DrawText($"{currentPage + 1}/{pages}", corner + offset + new Vector2(60f, 12f), UI.Text, UI.TextColor, TextAlignment.Centred);
         if (Input.IsLeftClickPressed() && (inLeftBound || inRightBound))
         {
             class_238.field_1991.field_1821.method_28(1f);
