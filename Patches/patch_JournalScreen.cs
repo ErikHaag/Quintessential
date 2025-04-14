@@ -18,7 +18,6 @@ public class patch_JournalScreen{
 	public extern void orig_method_50(float deltaTime);
 	public void method_50(float deltaTime){
 		orig_method_50(deltaTime);
-
 		if(QuintessentialLoader.AllJournals.Count == 1)
 			return;
 		

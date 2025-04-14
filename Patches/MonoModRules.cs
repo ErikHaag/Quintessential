@@ -116,31 +116,54 @@ static class MonoModRules{
 	public static void PatchMoleculeEditorScreen(MethodDefinition method, CustomAttribute attrib)
 	{
 		MonoModRule.Modder.Log("Patching molecule editor screen");
-		if (method.HasBody)
+		if (!method.HasBody)
 		{
-			ILCursor cursor = new(new ILContext(method));
-			if (cursor.TryGotoNext(MoveType.Before,
-				x => x.MatchLdarg(0),
-				x => x.MatchLdloc(7),
-				x => x.MatchLdfld(out _),
-				x => x.MatchLdcI4(1),
-				x => x.MatchCallvirt("ModdedLightning.MoleculeEditorScreen", "method_1130")
-			))
-			{
-				Console.WriteLine(cursor.Index);
-			}
-			else
-			{
-				Console.WriteLine("Failed to modify molecule editor rendering (no match)!");
-				throw new Exception();
-			}
-		}
-		else {
 			Console.WriteLine("Failed to modify molecule editor rendering (no body)!");
+			throw new Exception();
+		}
+		ILCursor cursor = new(new ILContext(method)); // Create cursor
+		if (!cursor.TryGotoNext(MoveType.Before,
+			instr => instr.MatchLdarg(0),
+			instr => instr.MatchLdloc(7),
+			instr => instr.MatchLdsfld("class_175", "field_1675"),
+			instr => instr.MatchLdcI4(1),
+			instr => instr.MatchCallvirt("MoleculeEditorScreen", "method_1130") // Move to the function call
+		))
+		{
+			Console.WriteLine("Failed to modify molecule editor rendering (no start match)!");
+			throw new Exception();
+		}
+		int start = cursor.Index;
+        if (!cursor.TryGotoNext(MoveType.After,
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdloc(7),
+            instr => instr.MatchLdsfld("class_175", "field_1690"),
+            instr => instr.MatchLdcI4(1),
+            instr => instr.MatchCallvirt("MoleculeEditorScreen", "method_1130") // Move to the function call
+        ))
+        {
+            Console.WriteLine("Failed to modify molecule editor rendering (no near end match)!");
             throw new Exception();
         }
+        if (!cursor.TryGotoNext(MoveType.After,
+            instr => instr.MatchStindR4()
+        ))
+        {
+            Console.WriteLine("Failed to modify molecule editor rendering (no end match)!");
+            throw new Exception();
+        }
+        int end = cursor.Index;
 
-    }
+        TypeDefinition host = MonoModRule.Modder.FindType("MoleculeEditorScreen").Resolve();
+		MethodDefinition parasite = host.Methods.First(m => m.Name.Equals("DrawAtoms"));
+
+        cursor.Goto(start);
+		cursor.RemoveRange(end - start); // Go bye with you
+		cursor.Emit(OpCodes.Ldarg_0); // this
+		cursor.Emit(OpCodes.Ldloc, 7);
+        cursor.Emit(OpCodes.Ldloc, 6);
+		cursor.Emit(OpCodes.Callvirt, parasite);
+	}
 
 	public static void PatchPuzzleEditorScreen(MethodDefinition method, CustomAttribute attrib) {
 		MonoModRule.Modder.Log("Patching puzzle editor screen");
