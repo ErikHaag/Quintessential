@@ -22,8 +22,10 @@ class patch_MoleculeEditorScreen
     internal patch_Puzzle editing;
 
     private static readonly Texture prevAtoms = class_235.method_615("Quintessential/editor_go_left");
+    private static readonly Texture prevAtomsFaded = class_235.method_615("Quintessential/editor_go_left_faded");
     private static readonly Texture prevAtomsHover = class_235.method_615("Quintessential/editor_go_left_hover");
     private static readonly Texture nextAtoms = class_235.method_615("Quintessential/editor_go_right");
+    private static readonly Texture nextAtomsFaded = class_235.method_615("Quintessential/editor_go_right_faded");
     private static readonly Texture nextAtomsHover = class_235.method_615("Quintessential/editor_go_right_hover");
     private static readonly int LastPage = (Quintessential.QApi.ModAtomTypes.Count + 14) / 15;
 
@@ -34,7 +36,7 @@ class patch_MoleculeEditorScreen
 
     [PatchMoleculeEditorScreen]
     public extern void orig_method_50(float param);
-    public void method_50(float param)
+    public void method_50(float param)  
     {
         orig_method_50(param);
         if (!ShowExtraUI)
@@ -49,8 +51,8 @@ class patch_MoleculeEditorScreen
         rPos.X += 350 - nextAtoms.field_2056.X;
         bool inLeftBound = Bounds2.WithSize(lPos, prevAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         bool inRightBound = Bounds2.WithSize(rPos, nextAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
-        UI.DrawTexture(inLeftBound ? prevAtomsHover : prevAtoms, lPos);
-        UI.DrawTexture(inRightBound ? nextAtomsHover : nextAtoms, rPos);
+        UI.DrawTexture(currentPage > 0 ? inLeftBound ? prevAtomsHover : prevAtoms : prevAtomsFaded, lPos);
+        UI.DrawTexture(currentPage < LastPage ? inRightBound ? nextAtomsHover : nextAtoms: nextAtomsFaded, rPos);
         UI.DrawText($"{currentPage + 1}/{LastPage + 1}", corner + new Vector2(262f, 800f), UI.Text, UI.TextColor, TextAlignment.Centred);
         if (Input.IsLeftClickPressed() && (inLeftBound || inRightBound))
         {
