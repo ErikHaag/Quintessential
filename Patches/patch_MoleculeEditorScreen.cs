@@ -1,6 +1,6 @@
 ﻿
 #pragma warning disable CS0626 // Method, operator, or accessor is marked external and has no attributes on it
-//#pragma warning disable IDE1006
+#pragma warning disable IDE1006
 
 
 using System.Drawing.Design;
@@ -20,57 +20,56 @@ class patch_MoleculeEditorScreen
 {
 
     internal patch_Puzzle editing;
+
     private static readonly Texture prevAtoms = class_235.method_615("Quintessential/editor_go_left");
     private static readonly Texture prevAtomsHover = class_235.method_615("Quintessential/editor_go_left_hover");
     private static readonly Texture nextAtoms = class_235.method_615("Quintessential/editor_go_right");
     private static readonly Texture nextAtomsHover = class_235.method_615("Quintessential/editor_go_right_hover");
+    private static readonly int LastPage = (Quintessential.QApi.ModAtomTypes.Count + 14) / 15;
+
     public static int currentPage = 0;
+
+
+    private bool ShowExtraUI => editing is { IsModdedPuzzle: true } && Quintessential.QApi.ModAtomTypes.Count > 0;
 
     [PatchMoleculeEditorScreen]
     public extern void orig_method_50(float param);
     public void method_50(float param)
     {
         orig_method_50(param);
-        if (editing is { IsModdedPuzzle: false } || Quintessential.QApi.ModAtomTypes.Count == 0)
+        if (!ShowExtraUI)
         {
             currentPage = 0;
             return;
         }
         Vector2 uiSize = new(1516f, 922f);
         Vector2 corner = (Input.ScreenSize() / 2 - uiSize / 2 + new Vector2(-2f, -11f)).Rounded();
-        Vector2 offset = new(90f, 310f);
-        Vector2 lPos = corner + offset;
-        Vector2 rPos = corner + offset + new Vector2(91f, 0f);
+        Vector2 lPos = corner + new Vector2(90f, 800f);
+        Vector2 rPos = lPos;
+        rPos.X += 350 - nextAtoms.field_2056.X;
         bool inLeftBound = Bounds2.WithSize(lPos, prevAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         bool inRightBound = Bounds2.WithSize(rPos, nextAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         UI.DrawTexture(inLeftBound ? prevAtomsHover : prevAtoms, lPos);
         UI.DrawTexture(inRightBound ? nextAtomsHover : nextAtoms, rPos);
-        int pages = (byte)(1 + (Quintessential.QApi.ModAtomTypes.Count + 14) / 15);
-        UI.DrawText($"{currentPage + 1}/{pages}", corner + offset + new Vector2(60f, 12f), UI.Text, UI.TextColor, TextAlignment.Centred);
+        UI.DrawText($"{currentPage + 1}/{LastPage + 1}", corner + new Vector2(262f, 800f), UI.Text, UI.TextColor, TextAlignment.Centred);
         if (Input.IsLeftClickPressed() && (inLeftBound || inRightBound))
         {
             class_238.field_1991.field_1821.method_28(1f);
 
-            if (inLeftBound)
+            if (inLeftBound && currentPage > 0)
             {
-                var next = currentPage - 1;
-                if (next < 0)
-                    next += pages;
-                currentPage = next;
+                currentPage--;
             }
 
-            if (inRightBound)
+            if (inRightBound && currentPage < LastPage)
             {
-                var next = currentPage + 1;
-                if (next >= pages)
-                    next = 0;
-                currentPage = next;
+                currentPage++;
             }
         }
     }
 
     [MonoMod.MonoModIgnore]
-	private extern void method_1130(Vector2 pos, AtomType type, bool b);
+    private extern void method_1130(Vector2 pos, AtomType type, bool b);
     internal void DrawAtoms(Vector2 corner, Vector2 spacing)
     {
         List<AtomType> atoms = new()
