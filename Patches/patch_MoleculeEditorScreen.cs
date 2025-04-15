@@ -3,14 +3,7 @@
 #pragma warning disable IDE1006
 
 
-using System.Drawing.Design;
 using Quintessential;
-using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
-using Mono.Cecil.Cil;
-using System.Reflection;
-using Mono.Cecil;
-using System;
 using MonoMod;
 using System.Collections.Generic;
 

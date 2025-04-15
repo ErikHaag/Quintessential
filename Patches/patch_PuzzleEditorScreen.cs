@@ -140,7 +140,7 @@ class patch_PuzzleEditorScreen{
 							GameLogic.field_2434.field_2460.method_2241(myPuzzle);
 						});
 						((patch_MoleculeEditorScreen)(object)moleculeEditorScreen).editing = conv;
-							GameLogic.field_2434.method_946(moleculeEditorScreen);
+						GameLogic.field_2434.method_946(moleculeEditorScreen);
 						class_238.field_1991.field_1821.method_28(1f);
 					}
 				}
