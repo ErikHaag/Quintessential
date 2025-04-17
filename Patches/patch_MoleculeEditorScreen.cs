@@ -109,7 +109,7 @@ class patch_MoleculeEditorScreen
                 {
                     bool hovering = Bounds2.WithSize(pos - new Vector2(30, 30), new Vector2(61, 61)).Contains(Input.MousePos());
                     if (hovering) {
-                        UI.DrawText(((patch_AtomType)(object)atoms[index]).QuintAtomType, pos + new Vector2(0, -40), class_238.field_1990.field_2140, UI.TextColor, TextAlignment.Centred);
+                        UI.DrawText(atoms[index].field_2284, pos + new Vector2(0, -40), class_238.field_1990.field_2140, UI.TextColor, TextAlignment.Centred);
                     }
                 }
                 pos.X += spacing.X;
