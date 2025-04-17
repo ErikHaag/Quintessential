@@ -20,6 +20,9 @@ class patch_MoleculeEditorScreen
     private static readonly Texture nextAtoms = class_235.method_615("Quintessential/editor_go_right");
     private static readonly Texture nextAtomsFaded = class_235.method_615("Quintessential/editor_go_right_faded");
     private static readonly Texture nextAtomsHover = class_235.method_615("Quintessential/editor_go_right_hover");
+    // for measuring stuff in debugging
+    //private static readonly Texture dot = class_235.method_618(Color.Red);
+
     private static readonly int LastPage = (Quintessential.QApi.ModAtomTypes.Count + 14) / 15;
 
     public static int currentPage = 0;
@@ -29,7 +32,7 @@ class patch_MoleculeEditorScreen
 
     [PatchMoleculeEditorScreen]
     public extern void orig_method_50(float param);
-    public void method_50(float param)  
+    public void method_50(float param)
     {
         orig_method_50(param);
         if (!ShowExtraUI)
@@ -45,7 +48,7 @@ class patch_MoleculeEditorScreen
         bool inLeftBound = Bounds2.WithSize(lPos, prevAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         bool inRightBound = Bounds2.WithSize(rPos, nextAtoms.field_2056.ToVector2()).Contains(Input.MousePos());
         UI.DrawTexture(currentPage > 0 ? inLeftBound ? prevAtomsHover : prevAtoms : prevAtomsFaded, lPos);
-        UI.DrawTexture(currentPage < LastPage ? inRightBound ? nextAtomsHover : nextAtoms: nextAtomsFaded, rPos);
+        UI.DrawTexture(currentPage < LastPage ? inRightBound ? nextAtomsHover : nextAtoms : nextAtomsFaded, rPos);
         UI.DrawText($"{currentPage + 1}/{LastPage + 1}", corner + new Vector2(262f, 800f), UI.Text, UI.TextColor, TextAlignment.Centred);
         if (Input.IsLeftClickPressed() && (inLeftBound || inRightBound))
         {
@@ -91,6 +94,7 @@ class patch_MoleculeEditorScreen
 
         }
         Vector2 pos = corner;
+        bool showExtra = Input.IsShiftHeld();
         for (int y = 0; y < 5; y++)
         {
             for (int x = 0; x < 3; x++)
@@ -101,6 +105,13 @@ class patch_MoleculeEditorScreen
                     goto outer;
                 }
                 this.method_1130(pos, atoms[index], true);
+                if (showExtra)
+                {
+                    bool hovering = Bounds2.WithSize(pos - new Vector2(30, 30), new Vector2(61, 61)).Contains(Input.MousePos());
+                    if (hovering) {
+                        UI.DrawText(((patch_AtomType)(object)atoms[index]).QuintAtomType, pos + new Vector2(0, -40), class_238.field_1990.field_2140, UI.TextColor, TextAlignment.Centred);
+                    }
+                }
                 pos.X += spacing.X;
             }
             pos.X = corner.X;
