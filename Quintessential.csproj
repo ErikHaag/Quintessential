@@ -58,8 +58,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call postbuild.bat" WorkingDirectory="$(ProjectDir)" />
-  </Target>
-
 </Project>
