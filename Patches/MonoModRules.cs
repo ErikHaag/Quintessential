@@ -4,6 +4,7 @@ using MonoMod.Cil;
 using MonoMod.InlineRT;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace MonoMod;
 
