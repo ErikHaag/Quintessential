@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace MonoMod;
 
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchEditor))]
+class PatchEditor : Attribute {}
+
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSettingsStaticInit))]
 class PatchSettingsStaticInit : Attribute{}
 
@@ -33,6 +36,37 @@ static class MonoModRules{
 	static MonoModRules(){
 		MonoModRule.Modder.Log("Patching OM");
 	}
+	public static void PatchEditor(MethodDefinition method, CustomAttribute attrib)
+	{
+		MonoModRule.Modder.Log("Patching editor");
+		if (!method.HasBody)
+		{
+			MonoModRule.Modder.Log("Failed to modify editor (no body)");
+			throw new Exception();
+		}
+		ILCursor cursor = new(new ILContext(method));
+		if (!cursor.TryGotoNext(MoveType.After,
+			instr => instr.MatchRet(),
+			instr => instr.MatchLdarg(0),
+			instr => instr.MatchLdfld("AtomType", "field_2294")
+		))
+		{
+			MonoModRule.Modder.Log("Failed to modify editor (couldn't find if statement)");
+			throw new Exception();
+		}
+		int beginIf = cursor.Index;
+		cursor.Index++;	
+		if (!cursor.TryGotoNext(MoveType.Before,
+			instr => instr.MatchRet()
+		))
+		{
+            MonoModRule.Modder.Log("Failed to modify editor (couldn't find return statement)");
+            throw new Exception();
+        }
+		int endIf = cursor.Index + 1;
+		MonoModRule.Modder.Log(beginIf);
+		MonoModRule.Modder.Log(endIf);
+    }
 
 	public static void PatchSettingsStaticInit(MethodDefinition method, CustomAttribute attrib){
 		MonoModRule.Modder.Log("Patching settings static init");
