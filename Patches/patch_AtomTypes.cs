@@ -26,5 +26,13 @@ class patch_AtomTypes{
 		((patch_AtomType)(object)AtomTypes.field_1688).QuintAtomType = "mors";
 		((patch_AtomType)(object)AtomTypes.field_1689).QuintAtomType = "repeat";
 		((patch_AtomType)(object)AtomTypes.field_1690).QuintAtomType = "quintessence";
-	}
+
+		((patch_MetalLighting)(object)AtomTypes.field_1681).atomLighting = class_238.field_1989.field_81.field_610;
+		((patch_MetalLighting)(object)AtomTypes.field_1682).atomLighting = class_238.field_1989.field_81.field_610;
+		((patch_MetalLighting)(object)AtomTypes.field_1683).atomLighting = class_238.field_1989.field_81.field_610;
+		((patch_MetalLighting)(object)AtomTypes.field_1684).atomLighting = class_238.field_1989.field_81.field_610;
+		((patch_MetalLighting)(object)AtomTypes.field_1685).atomLighting = class_238.field_1989.field_81.field_610;
+		((patch_MetalLighting)(object)AtomTypes.field_1686).atomLighting = class_238.field_1989.field_81.field_610;
+
+    }
 }
