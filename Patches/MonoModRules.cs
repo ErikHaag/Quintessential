@@ -4,7 +4,6 @@ using MonoMod.Cil;
 using MonoMod.InlineRT;
 using System;
 using System.Linq;
-using System.Threading;
 
 namespace MonoMod;
 
@@ -56,17 +55,30 @@ static class MonoModRules{
 			throw new Exception();
 		}
 		int beginIf = cursor.Index;
-		cursor.Index++;	
+		
 		if (!cursor.TryGotoNext(MoveType.Before,
-			instr => instr.MatchRet()
+			instr => instr.MatchStloc(7)
 		))
 		{
-            MonoModRule.Modder.Log("Failed to modify editor (couldn't find return statement)");
+			MonoModRule.Modder.Log("Failed to modify editor (couldn't find store 7)");
+			throw new Exception();
+		}
+		int str7 = cursor.Index + 1;
+		cursor.Index = beginIf + 1;
+        cursor.RemoveRange(str7 - beginIf - 1);
+
+        if (!cursor.TryGotoNext(MoveType.After,
+            instr => instr.MatchStloc(8)
+        ))
+        {
+            MonoModRule.Modder.Log("Failed to modify editor (couldn't find store 8)");
             throw new Exception();
         }
-		int endIf = cursor.Index + 1;
-		MonoModRule.Modder.Log(beginIf);
-		MonoModRule.Modder.Log(endIf);
+        TypeDefinition host = MonoModRule.Modder.FindType("Editor").Resolve();
+		MethodDefinition parasite = host.Methods.First(m => m.Name.Equals("GetAtomLighting"));
+        cursor.Emit(OpCodes.Ldloc, 8);
+		cursor.Emit(OpCodes.Call, parasite);
+		cursor.Emit(OpCodes.Stloc, 7);
     }
 
 	public static void PatchSettingsStaticInit(MethodDefinition method, CustomAttribute attrib){
