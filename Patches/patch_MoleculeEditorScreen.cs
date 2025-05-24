@@ -23,8 +23,6 @@ class patch_MoleculeEditorScreen
     // for measuring stuff in debugging
     //private static readonly Texture dot = class_235.method_618(Color.Red);
 
-    private static readonly int LastPage = (Quintessential.QApi.ModAtomTypes.Count + 14) / 15;
-
     public static int currentPage = 0;
 
 
@@ -40,6 +38,12 @@ class patch_MoleculeEditorScreen
             currentPage = 0;
             return;
         }
+        
+        // This was being instantiated before all other mods could call LoadPuzzleContent, causing the list to be unpopulated.
+        // This only occurred when Reductive Metallurgy Campaign is loaded for me, though I've had other mods on.
+        // Thankfully it's only an integer division, but I should find a more sensible patch.
+        int LastPage = (Quintessential.QApi.ModAtomTypes.Count + 14) / 15;
+
         Vector2 uiSize = new(1516f, 922f);
         Vector2 corner = (Input.ScreenSize() / 2 - uiSize / 2 + new Vector2(-2f, -11f)).Rounded();
         Vector2 lPos = corner + new Vector2(90f, 800f);
