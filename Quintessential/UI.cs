@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MonoMod.Utils;
 
 namespace Quintessential;
@@ -41,8 +42,16 @@ public static class UI {
 
 	#region Text drawing methods
 
-	public static Bounds2 DrawText(string text, Vector2 pos, OMFont font, Color color, TextAlignment alignment, float maxWidth = float.MaxValue, float ellipsesCutoff = float.MaxValue) {
-		return OMDraw.method_290(text, pos, font, color, (enum_0)(int)alignment, 1f, 0.6f, maxWidth, ellipsesCutoff, 0, new Color(), (OMTexture)null, int.MaxValue, true, true);
+	[Flags]
+	public enum TextFlags {
+		None = 0,
+		Bounds = 1,
+		Draw = 2,
+		Both = 3
+	}
+
+	public static Bounds2 DrawText(string text, Vector2 pos, OMFont font, Color color, TextAlignment alignment, float maxWidth = float.MaxValue, float ellipsesCutoff = float.MaxValue, TextFlags flags = TextFlags.Both) {
+		return OMDraw.method_290(text, pos, font, color, (enum_0)(int)alignment, 1f, 0.6f, maxWidth, ellipsesCutoff, 0, new Color(), (OMTexture)null, int.MaxValue, (flags & TextFlags.Bounds) != TextFlags.None, (flags & TextFlags.Draw) != TextFlags.None);
 	}
 
 	public static void DrawHeader(string text, Vector2 pos, int width, bool a, bool b) {

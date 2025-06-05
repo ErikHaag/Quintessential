@@ -33,7 +33,7 @@ public class ChapterModel {
 
 public class EntryModel {
 
-	// TODO: multiple requirements, documents, tutorials
+	// TODO: multiple requirements, tutorials
 
 	public string Type { get; set; } = "puzzle";
 	
@@ -43,7 +43,11 @@ public class EntryModel {
 
 	public string Puzzle { get; set; }
 
-	public string Requires { get; set; }
+	public string VignetteData { get; set; }
+
+	public string Song { get; set; }
+
+    public string Requires { get; set; }
 	
 	public string Icon { get; set; }
 	public string IconSmall { get; set; }

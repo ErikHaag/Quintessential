@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 
 namespace Quintessential;
 
@@ -16,6 +17,23 @@ public static class QApi {
 	public static readonly List<AtomType> ModAtomTypes = new();
 	public static readonly List<Action<Sim, bool>> ToRunAfterCycle = new();
 	public static readonly List<PuzzleOption> PuzzleOptions = new();
+
+    public static readonly List<string> VanillaDocumentLayouts = new() { "letter-0", "letter-1", "letter-2", "letter-3", "letter-4", "letter-5", "letter-6", "letter-7", "letter-9", "letter-response", "intro-6", "outro-6" };
+    public static readonly Dictionary<string, Action<DocumentScreen, float>> DocumentLayoutRenderers = new();
+
+	public static readonly Dictionary<string, class_186> VanillaSongs = new() {
+		{ "Map", class_238.field_1992.field_968 },
+        { "Solitare", class_238.field_1992.field_969 },
+        { "Solving1", class_238.field_1992.field_970 },
+        { "Solving2", class_238.field_1992.field_971 },
+        { "Solving3", class_238.field_1992.field_972 },
+        { "Solving4", class_238.field_1992.field_973 },
+        { "Solving5", class_238.field_1992.field_974 },
+        { "Solving6", class_238.field_1992.field_975 },
+		{ "Story1", class_238.field_1992.field_976 },
+		{ "Story2", class_238.field_1992.field_977 },
+        { "Title", class_238.field_1992.field_978 }
+    };
 
 	public static void Init(){
 
@@ -139,6 +157,16 @@ public static class QApi {
 			}
 		}
 		return default;
+	}
+
+	/// <summary>
+	/// Adds a document layout, used in .document.yaml files.
+	/// </summary>
+	/// <param name="pageType">The layout name, we recommend you add a unique prefix; such as the mod's name, to this.</param>
+	/// <param name="renderer">The renderer of the layout For examples squint at <c>DocumentScreen.orig_method_50</c>. Use the <c>UI</c> class for this.</param>
+	public static void AddDocumentLayoutRenderer(string pageType, Action<DocumentScreen, float> renderer)
+	{
+		DocumentLayoutRenderers.Add(pageType, renderer);
 	}
 }
 

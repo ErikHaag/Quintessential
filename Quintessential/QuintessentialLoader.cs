@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Resources;
 
 using Ionic.Zip;
-
+using Mono.Cecil.Cil;
 using MonoMod.Utils;
 
 using Quintessential.Serialization;
@@ -490,10 +490,26 @@ SomeZipIDontLike.zip");
 							}
 
 							// TODO: optimize
-							cItem = AddEntryToCampaign(campaign, j, entry.ID, class_134.method_253(entry.Title, string.Empty), (enum_129)0, struct_18.field_1431, puzzle, class_238.field_1992.field_972, class_238.field_1991.field_1832, requirement, entry.NoStoryPanel);
+							cItem = AddEntryToCampaign(campaign, j, entry.ID, class_134.method_253(entry.Title, string.Empty), (enum_129)0, struct_18.field_1431, puzzle, entry.Song, class_238.field_1991.field_1832, requirement, entry.NoStoryPanel);
 							Array.Resize(ref Puzzles.field_2816, Puzzles.field_2816.Length + 1);
 							Puzzles.field_2816[Puzzles.field_2816.Length - 1] = puzzle;
 							break;
+						}
+						case "cutscene":
+						{
+								if (!TryLoadCutscene(c.Path, entry.VignetteData, c.Title, out var cutsceneModal))
+									continue;
+								cItem = AddEntryToCampaign(campaign, j, cutsceneModal.Vignette, class_134.method_253(entry.Title, string.Empty), (enum_129)1, struct_18.field_1431, struct_18.field_1431, entry.Song, class_238.field_1991.field_1832, requirement, false);
+								break;
+						}
+						case "document": {
+								if (!TryLoadDocument(c.Path, entry.VignetteData, c.Title, out var documentModel))
+									continue;
+								// A bit cheeky
+								cItem = AddEntryToCampaign(campaign, j, documentModel.Vignette, class_134.method_253(entry.Title, string.Empty), (enum_129)2, struct_18.field_1431, struct_18.field_1431, "", class_238.field_1991.field_1832, requirement, false);
+								cItem.field_2322 = entry.ID;
+								cItem.field_2327.method_1087().field_2090 = documentModel.Layout;
+								break;
 						}
 						case "solitaire": {
 							cItem = new(entry.ID, class_134.method_253("Sigmar's Garden", string.Empty), (enum_129) 3, struct_18.field_1431, requirement, class_238.field_1992.field_970, class_238.field_1991.field_1830);
@@ -569,6 +585,33 @@ SomeZipIDontLike.zip");
 		}
 	}
 
+	private static bool TryLoadCutscene(string basePath, string cutsceneName, string campaignTitle, out CutsceneModel cutsceneModel)
+	{
+        string baseName = Path.Combine(basePath, cutsceneName);
+        if (!File.Exists(baseName + ".cutscene.yaml"))
+        {
+            Logger.Log($"Cutscene \"{cutsceneName}\" from \"{campaignTitle}\" doesn't exist, ignoring");
+            cutsceneModel = null;
+            return false;
+        }
+        cutsceneModel = YamlHelper.Deserializer.Deserialize<CutsceneModel>(File.ReadAllText(baseName + ".cutscene.yaml"));
+		return true;
+	}
+
+
+    private static bool TryLoadDocument(string basePath, string documentName, string campaignTitle, out DocumentModel documentModel)
+    {
+		string baseName = Path.Combine(basePath, documentName);
+		if (!File.Exists(baseName + ".document.yaml"))
+		{
+            Logger.Log($"Document \"{documentName}\" from \"{campaignTitle}\" doesn't exist, ignoring");
+            documentModel = null;
+            return false;
+        }
+        documentModel = YamlHelper.Deserializer.Deserialize<DocumentModel>(File.ReadAllText(baseName + ".document.yaml"));
+		return true;
+	}
+
 	public static void CheckCampaignReload(){
 		if(QuintessentialSettings.Instance.HotReloadCampaigns.Pressed() && GameLogic.field_2434.method_938() is PuzzleSelectScreen){
 			Logger.Log("Reloading campaigns and journals!");
@@ -602,7 +645,7 @@ SomeZipIDontLike.zip");
 			enum_129 type,
 			Maybe<class_215> param_4485,
 			Maybe<Puzzle> puzzle,
-			class_186 param_4487,
+			string param_4487,
 			Sound clickSound,
 			class_259 requirement,
 			bool noStoryPanel
@@ -611,7 +654,22 @@ SomeZipIDontLike.zip");
 			//puzzle.method_1087().field_2767 = entryTitle;
 			puzzle.method_1087().field_2769 = param_4485;
 		}
-		CampaignItem campaignItem = new(entryId, entryTitle, type, puzzle, requirement, param_4487, clickSound);
+		if (string.IsNullOrEmpty(param_4487)) {
+			if (type == (enum_129)1)
+			{
+				param_4487 = "Story1";
+			}
+			else
+			{
+				param_4487 = "Solving3";
+			}
+		}
+		if (!QApi.VanillaSongs.TryGetValue(param_4487, out class_186 song)) {
+			Logger.Log($"Unknown song \"{param_4487}\" found in {entryId}, defaulting to Solving3.");
+			song = QApi.VanillaSongs["Solving3"];
+		}
+
+		CampaignItem campaignItem = new(entryId, entryTitle, type, puzzle, requirement, song, clickSound);
 		campaign.field_2309[chapter].field_2314.Add(campaignItem);
 		// no cutscene to see here
 		if(noStoryPanel)
