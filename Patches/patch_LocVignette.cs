@@ -6,12 +6,31 @@ using System.IO;
 [MonoModPatch("class_264")]
 class patch_LocVignette {
 
-	[MonoModConstructor]
-	public void ctor(string key) {
-		class_264 self = (class_264)(object)this;
+    public struct CutsceneInfo
+    {
+        public string Setting;
+        public string Background;
+        public CutsceneInfo(string setting, string background)
+        {
+            this.Setting = setting;
+            this.Background = background;
+        }
 
-		self.field_2091 = new Dictionary<Language, Vignette>();
-		self.field_2090 = key;
+    }
+
+    public Maybe<CutsceneInfo> csI;
+
+    [MonoModIgnore]
+    string field_2090;
+    [MonoModIgnore]
+    Dictionary<Language, Vignette> field_2091;
+
+
+    [MonoModConstructor]
+	public void ctor(string key) {
+
+		field_2091 = new Dictionary<Language, Vignette>();
+		field_2090 = key;
         Language[] languages = {
             Language.English,
             Language.German,
@@ -33,13 +52,13 @@ class patch_LocVignette {
                 string content = QuintessentialLoader.ModContentDirectories[i];
                 path1 = Path.Combine(content, "Content", "vignettes", $"{key}.{class_134.field_1498[Language.English]}.txt");
             }
-
+            
             string text = File.Exists(path1) ? File.ReadAllText(path1) : "";
 
-            self.field_2091[lang] = new Vignette(text, Path.GetFileNameWithoutExtension(path1), lang);
+            field_2091[lang] = new Vignette(text, Path.GetFileNameWithoutExtension(path1), lang);
             if(lang == Language.English) {
                 Vignette vignette = new(text, Path.GetFileNameWithoutExtension(path1), Language.Pseudo);
-                self.field_2091[Language.Pseudo] = vignette;
+                field_2091[Language.Pseudo] = vignette;
                 vignette.field_4124 = class_134.method_249(vignette.field_4124);
                 foreach(List<VignetteEvent> vignetteEventList in vignette.field_4125) {
                     for(int index = 0; index < vignetteEventList.Count; ++index) {

@@ -497,16 +497,18 @@ SomeZipIDontLike.zip");
 						}
 						case "cutscene":
 						{
-								if (!TryLoadCutscene(c.Path, entry.VignetteData, c.Title, out var cutsceneModal))
+								if (!TryLoadCutscene(c.Path, entry.VignetteData, c.Title, out var cutsceneModel))
 									continue;
-								cItem = AddEntryToCampaign(campaign, j, cutsceneModal.Vignette, class_134.method_253(entry.Title, string.Empty), (enum_129)1, struct_18.field_1431, struct_18.field_1431, entry.Song, class_238.field_1991.field_1832, requirement, false);
+								cItem = AddEntryToCampaign(campaign, j, cutsceneModel.Vignette, class_134.method_253(entry.Title, string.Empty), (enum_129)1, struct_18.field_1431, struct_18.field_1431, entry.Song, class_238.field_1991.field_1832, requirement, false);
+								cItem.field_2322 = entry.ID;
+								((patch_LocVignette)(object)cItem.field_2327.method_1087()).csI = new(true, new(class_134.method_253(cutsceneModel.Place, string.Empty), cutsceneModel.Background));
 								break;
-						}
+							}
 						case "document": {
 								if (!TryLoadDocument(c.Path, entry.VignetteData, c.Title, out var documentModel))
 									continue;
 								// A bit cheeky
-								cItem = AddEntryToCampaign(campaign, j, documentModel.Vignette, class_134.method_253(entry.Title, string.Empty), (enum_129)2, struct_18.field_1431, struct_18.field_1431, "", class_238.field_1991.field_1832, requirement, false);
+								cItem = AddEntryToCampaign(campaign, j, documentModel.Vignette, class_134.method_253(entry.Title, string.Empty), (enum_129)2, struct_18.field_1431, struct_18.field_1431, "Solving3", class_238.field_1991.field_1832, requirement, false);
 								cItem.field_2322 = entry.ID;
 								cItem.field_2327.method_1087().field_2090 = documentModel.Layout;
 								break;
@@ -650,11 +652,13 @@ SomeZipIDontLike.zip");
 			class_259 requirement,
 			bool noStoryPanel
 	) {
-		if(puzzle.method_1085()) {
+		if(puzzle.method_1085())
+		{
 			//puzzle.method_1087().field_2767 = entryTitle;
 			puzzle.method_1087().field_2769 = param_4485;
 		}
-		if (string.IsNullOrEmpty(param_4487)) {
+		if (string.IsNullOrEmpty(param_4487))
+		{
 			if (type == (enum_129)1)
 			{
 				param_4487 = "Story1";
@@ -664,7 +668,8 @@ SomeZipIDontLike.zip");
 				param_4487 = "Solving3";
 			}
 		}
-		if (!QApi.VanillaSongs.TryGetValue(param_4487, out class_186 song)) {
+		if (!QApi.VanillaSongs.TryGetValue(param_4487, out class_186 song))
+		{
 			Logger.Log($"Unknown song \"{param_4487}\" found in {entryId}, defaulting to Solving3.");
 			song = QApi.VanillaSongs["Solving3"];
 		}

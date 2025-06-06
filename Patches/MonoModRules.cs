@@ -4,6 +4,7 @@ using MonoMod.Cil;
 using MonoMod.InlineRT;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace MonoMod;
 
@@ -18,6 +19,9 @@ class PatchScoreManagerLoad : Attribute{}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchGifRecorderFrame))]
 class PatchGifRecorderFrame : Attribute{}
+
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchCutsceneRenderer))]
+class PatchCutsceneRenderer : Attribute{}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchMoleculeEditorScreen))]
 class PatchMoleculeEditorScreen : Attribute{}
@@ -111,8 +115,70 @@ static class MonoModRules{
 			throw new Exception();
 		}
 	}
+	
+	public static void PatchCutsceneRenderer(MethodDefinition method, CustomAttribute attrib)
+	{
+		MonoModRule.Modder.Log("Patching cutscene renderer");
+		if (!method.HasBody)
+		{
+			Console.WriteLine("Failed to modify cutscene renderer (no body)!");
+			throw new Exception();
+		}
+		ILContext context = new(method);
+        ILCursor cursor = new(context);
+		if (!cursor.TryGotoNext(MoveType.After,
+			instr => instr.MatchLdarg(0),
+			instr => instr.MatchLdarg(0),
+			instr => instr.MatchLdfld("class_252", "field_2043"),
+			instr => instr.MatchLdarg(1),
+			instr => instr.MatchAdd(),
+			instr => instr.MatchStfld("class_252", "field_2043")
+        ))
+		{
+            Console.WriteLine("Failed to modify cutscene renderer (failed to find start of hash table)");
+            throw new Exception();
+        }
+		MethodInfo stringIsNullOrEmpty = typeof(String).GetMethod("IsNullOrEmpty");
 
-	public static void PatchMoleculeEditorScreen(MethodDefinition method, CustomAttribute attrib)
+		TypeDefinition cutsceneType = MonoModRule.Modder.FindType("class_252").Resolve();
+		FieldDefinition settingFD = cutsceneType.Fields.First(f => f.Name.Equals("Setting"));
+		FieldDefinition backgroundFD = cutsceneType.Fields.First(f => f.Name.Equals("Background"));
+
+        // wrap an if-else block around existing code.
+        cursor.Emit(OpCodes.Ldarg_0);
+        MonoModRule.Modder.Log("B");
+        cursor.Emit(OpCodes.Ldfld, settingFD);
+        MonoModRule.Modder.Log("C");
+        cursor.Emit(OpCodes.Call, stringIsNullOrEmpty);
+        MonoModRule.Modder.Log("D");
+        int ifBody = cursor.Index;
+		cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldfld, settingFD);
+		cursor.Emit(OpCodes.Stloc, 4);
+		cursor.Emit(OpCodes.Ldarg_0);
+		cursor.Emit(OpCodes.Ldfld, backgroundFD);
+		cursor.Emit(OpCodes.Stloc, 5);
+		int elseBody = cursor.Index;
+
+		if (!cursor.TryGotoNext(MoveType.AfterLabel,
+				instr => instr.MatchLdsfld("Color", "Black"),
+				instr => instr.MatchLdsfld("Vector2", "Zero"),
+				instr => instr.MatchLdsfld("class_115", "field_1433"),
+				instr => instr.MatchCall("class_135", "method_279")
+		))
+		{
+			Console.WriteLine("Failed to modify cutscene renderer (failed to find end of hash table)");
+			throw new Exception();
+		}
+		int elseEnd = cursor.Index;
+		cursor.Index = elseBody;
+		cursor.Emit(OpCodes.Br, cursor.Instrs[elseEnd]);
+        cursor.Index = ifBody;
+        cursor.Emit(OpCodes.Brtrue_S, cursor.Instrs[elseBody + 1]);
+    }
+
+
+    public static void PatchMoleculeEditorScreen(MethodDefinition method, CustomAttribute attrib)
 	{
 		MonoModRule.Modder.Log("Patching molecule editor screen");
 		if (!method.HasBody)
