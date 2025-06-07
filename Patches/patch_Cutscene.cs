@@ -1,8 +1,7 @@
 ﻿using MonoMod;
-using Quintessential;
 
 [MonoModPatch("class_252")]
-internal class patch_Cutscene
+public class patch_Cutscene
 {
     public class_256 Background;
     public string Setting;
@@ -27,9 +26,6 @@ internal class patch_Cutscene
     [MonoModIgnore]
     public extern void orig_ctor(class_264 param_4171, class_186 param_4172);
 
-    [MonoModIgnore]
-    class_264 field_2038;
-
     [PatchCutsceneRenderer, MonoModIgnore]
-    public extern static void method_50(float param_4176);
+    public extern void method_50(float param_4176);
 }

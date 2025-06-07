@@ -175,6 +175,8 @@ static class MonoModRules{
 		cursor.Emit(OpCodes.Br, cursor.Instrs[elseEnd]);
         cursor.Index = ifBody;
         cursor.Emit(OpCodes.Brtrue_S, cursor.Instrs[elseBody + 1]);
+
+		// TODO: add more control to cutscenes, like flipping characters and dismissing them
     }
 
 
