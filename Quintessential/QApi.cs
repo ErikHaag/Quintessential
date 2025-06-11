@@ -168,6 +168,11 @@ public static class QApi {
 	{
 		DocumentLayoutRenderers.Add(pageType, renderer);
 	}
+
+	public static void AddCharacter(string ID, class_230 character)
+	{
+		class_172.field_1670.Add(ID, character);
+	}
 }
 
 /// <summary>

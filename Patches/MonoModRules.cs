@@ -146,11 +146,8 @@ static class MonoModRules{
 
         // wrap an if-else block around existing code.
         cursor.Emit(OpCodes.Ldarg_0);
-        MonoModRule.Modder.Log("B");
         cursor.Emit(OpCodes.Ldfld, settingFD);
-        MonoModRule.Modder.Log("C");
         cursor.Emit(OpCodes.Call, stringIsNullOrEmpty);
-        MonoModRule.Modder.Log("D");
         int ifBody = cursor.Index;
 		cursor.Emit(OpCodes.Ldarg_0);
         cursor.Emit(OpCodes.Ldfld, settingFD);
