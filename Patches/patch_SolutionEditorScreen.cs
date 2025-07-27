@@ -8,7 +8,7 @@ class patch_SolutionEditorScreen
         // not the prettiest, but now it won't crash!
         HexIndex primaryResut = new(0, 0);
         HexIndex secondaryResult = new(0, 0);
-        static int dot(HexIndex h1, HexIndex h2) => ((2 * h1.Q + h1.R) * (2 * h2.Q + h2.R) + 3 * h1.R + h2.R) >> 2;
+        static int dot(HexIndex h1, HexIndex h2) => ((2 * h1.Q + h1.R) * (2 * h2.Q + h2.R) + 3 * h1.R * h2.R) / 4;
         int maxDistance = 0;
 
         foreach (HexIndex offset in method_2131(param_5729, param_5730))
@@ -32,12 +32,12 @@ class patch_SolutionEditorScreen
                 }
             }
         }
-        if (maxDistance == 0)
-        {
-            throw new class_266("Failed to find a handle location for this glyph");
-        }
         if (primaryResut.Q == 0 && primaryResut.R == 0)
         {
+            if (maxDistance == 0)
+            {
+                return new HexIndex(1, 0);
+            }
             return secondaryResult;
         }
         return primaryResut;
