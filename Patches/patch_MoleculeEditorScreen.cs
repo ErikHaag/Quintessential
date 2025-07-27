@@ -28,7 +28,7 @@ class patch_MoleculeEditorScreen
 
     private bool ShowExtraUI => editing is { IsModdedPuzzle: true } && Quintessential.QApi.ModAtomTypes.Count > 0;
 
-    [PatchMoleculeEditorScreen]
+    [PatchMoleculeEditorScreenAtomTray]
     public extern void orig_method_50(float param);
     public void method_50(float param)
     {
@@ -38,7 +38,7 @@ class patch_MoleculeEditorScreen
             currentPage = 0;
             return;
         }
-        
+
         // This was being instantiated before all other mods could call LoadPuzzleContent, causing the list to be unpopulated.
         // This only occurred when Reductive Metallurgy Campaign is loaded for me, though I've had other mods on.
         // Thankfully it's only an integer division, but I should find a more sensible patch.
@@ -71,10 +71,15 @@ class patch_MoleculeEditorScreen
     }
 
     [MonoMod.MonoModIgnore]
+    [PatchMoleculeEditorScreenMoleculeError]
+    public extern void method_1132(); 
+
+    [MonoMod.MonoModIgnore]
     private extern void method_1130(Vector2 pos, AtomType type, bool b);
     internal void DrawAtoms(Vector2 corner, Vector2 spacing)
     {
-        List<AtomType> atoms = new()
+        bool useVanillaList = currentPage == 0;
+        List<AtomType> atoms = useVanillaList ? new()
         {
             class_175.field_1675,
             class_175.field_1676,
@@ -91,19 +96,15 @@ class patch_MoleculeEditorScreen
             class_175.field_1687,
             class_175.field_1688,
             class_175.field_1690
-        };
-        if (editing is { IsModdedPuzzle: true })
-        {
-            atoms.AddRange(Quintessential.QApi.ModAtomTypes);
+        } : QApi.ModAtomTypes;
 
-        }
         Vector2 pos = corner;
         bool showExtra = Input.IsShiftHeld();
         for (int y = 0; y < 5; y++)
         {
             for (int x = 0; x < 3; x++)
             {
-                int index = 15 * currentPage + 3 * y + x;
+                int index = (useVanillaList ? 0 : 15 * (currentPage - 1)) + 3 * y + x;
                 if (index >= atoms.Count)
                 {
                     goto outer;
@@ -112,7 +113,8 @@ class patch_MoleculeEditorScreen
                 if (showExtra)
                 {
                     bool hovering = Bounds2.WithSize(pos - new Vector2(30, 30), new Vector2(61, 61)).Contains(Input.MousePos());
-                    if (hovering) {
+                    if (hovering)
+                    {
                         UI.DrawText(atoms[index].field_2284, pos + new Vector2(0, -40), class_238.field_1990.field_2140, UI.TextColor, TextAlignment.Centred);
                     }
                 }
