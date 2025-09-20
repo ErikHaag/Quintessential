@@ -207,30 +207,31 @@ static class MonoModRules
         ILCursor cursor = new(new ILContext(method)); // Create cursor
 
         if (!cursor.TryGotoNext(MoveType.After,
-            instr => instr.MatchNewobj(out MethodReference method) && method.DeclaringType.FullName == "System.Collections.Generic.HashSet`1<HexIndex>",
-            instr => instr.MatchStloc(1),
-            instr => instr.MatchNewobj(out MethodReference method) && method.DeclaringType.FullName == "System.Collections.Generic.Queue`1<HexIndex>",
-            instr => instr.MatchStloc(2)
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdfld(out FieldReference f) && f.Name == "field_2656",
+            instr => instr.OpCode == OpCodes.Callvirt,
+            instr => instr.OpCode == OpCodes.Callvirt,
+            instr => instr.MatchStloc(8),
+            instr => instr.OpCode == OpCodes.Br
         ))
         {
-            Console.WriteLine("Failed to modify molecule editor error detector (no molecule walker)!");
+            Console.WriteLine("Failed to modify molecule editor error detector (no bond checker)!");
             throw new Exception();
         }
-        int start = cursor.Index;
+        Instruction start = cursor.Previous;
+        cursor.Goto((Instruction)cursor.Previous.Operand);
 
         if (!cursor.TryGotoNext(MoveType.After,
-            instr => instr.MatchLdloc(8),
-            instr => instr.MatchCallvirt("System.IDisposable", "Dispose"),
-            instr => instr.MatchEndfinally()
+            instr => instr.OpCode == OpCodes.Brtrue,
+            instr => instr.OpCode == OpCodes.Leave_S
         ))
         {
-            Console.WriteLine("Failed to modify molecule editor error detector (No end of bond checker)!");
+            Console.WriteLine("Failed to modify molecule editor error detector (no last leave)");
             throw new Exception();
         }
-        int end = cursor.Index;
-        cursor.Goto(start);
-        cursor.Emit(OpCodes.Br, cursor.Instrs[end]);
-        //cursor.RemoveRange(end - start); // *Squegee noises*
+        Instruction end = cursor.Previous;
+        // Immediately leaves the loop
+        start.Operand = end;
     }
 
 
