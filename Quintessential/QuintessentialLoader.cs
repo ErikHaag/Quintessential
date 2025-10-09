@@ -17,7 +17,7 @@ namespace Quintessential;
 
 public class QuintessentialLoader {
 
-	public static readonly string VersionString = "0.5.1";
+	public static readonly string VersionString = "0.5.2";
 	public static readonly int VersionNumber = 9;
 
 	public static string PathLightning;
@@ -198,7 +198,7 @@ SomeZipIDontLike.zip");
 							// check that outdated optional dependencies still exist
 							bool skipLoad = true;
 							foreach(var opDep in mod.OptionalDependencies)
-								if(Mods.Any(m => m.Name.Equals(opDep.Name) && m.Version < opDep.Version))
+								if(Mods.Any(m => m.Name.Equals(opDep.Name) && m.Version <= opDep.Version))
 									skipLoad = false;
 							if(skipLoad) {
 								LoadModFromMeta(mod);
