@@ -118,13 +118,14 @@ public class PuzzleModel {
 		public string Name = "";
 
 		public MoleculeM(Molecule mol) {
-			// clean molecules first
+			// Preserve the name
+			Name = mol.field_2639.method_1090(null)?.method_620() ?? "";
+			// Clean molecule
 			mol = MoleculeEditorScreen.method_1134(mol);
 			foreach(var atom in mol.method_1100())
 				Atoms.Add(new AtomM(atom.Value, new HexIndexM(atom.Key)));
 			foreach(var bond in mol.method_1101())
 				Bonds.Add(new BondM(bond));
-			Name = mol.field_2639.method_1090(null)?.method_620() ?? "";
 		}
 
 		public MoleculeM(){}

@@ -2,6 +2,7 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.InlineRT;
+using Quintessential;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -185,15 +186,15 @@ static class MonoModRules
         }
         int end = cursor.Index;
 
-        TypeDefinition host = MonoModRule.Modder.FindType("MoleculeEditorScreen").Resolve();
-        MethodDefinition parasite = host.Methods.First(m => m.Name.Equals("DrawAtoms"));
+        TypeDefinition holder = MonoModRule.Modder.FindType("MoleculeEditorScreen").Resolve();
+        MethodDefinition to = holder.Methods.First(m => m.Name.Equals("DrawAtoms"));
 
         cursor.Goto(start);
         cursor.RemoveRange(end - start); // Go bye with you
         cursor.Emit(OpCodes.Ldarg_0); // this
         cursor.Emit(OpCodes.Ldloc, 7);
         cursor.Emit(OpCodes.Ldloc, 6);
-        cursor.Emit(OpCodes.Callvirt, parasite);
+        cursor.Emit(OpCodes.Callvirt, to);
     }
 
     public static void PatchMoleculeEditorScreenMoleculeError(MethodDefinition method, CustomAttribute attrib)
@@ -238,51 +239,64 @@ static class MonoModRules
     public static void PatchPuzzleEditorScreen(MethodDefinition method, CustomAttribute attrib)
     {
         MonoModRule.Modder.Log("Patching puzzle editor screen");
-        if (method.HasBody)
-        {
-            ILCursor cursor = new(new ILContext(method));
-            Instruction target = null; // will definitely be set
-
-            // kill off `flag5` and make the Upload puzzle button never clickable
-            if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdloc(27)))
-            {
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_I4_0);
-            }
-            else
-            {
-                Console.WriteLine("Failed to modify puzzle editor screen (no 1st match)!");
-                throw new Exception();
-            }
-
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdflda("PuzzleEditorScreen", "field_2789"),
-                   instr => instr.MatchCall(out MethodReference mref) && mref.Name.Equals("method_1085"),
-                   instr =>
-                   {
-                       bool ret = instr.OpCode == OpCodes.Brfalse;
-                       if (ret)
-                           target = (Instruction)instr.Operand;
-                       return ret;
-                   }))
-            {
-                // "if(this.field_2789.method_1085()){" ... "} if (!this.field_2789.method_1085()){"
-                TypeDefinition holder = MonoModRule.Modder.FindType("PuzzleEditorScreen").Resolve();
-                MethodDefinition to = holder.Methods.First(m => m.Name.Equals("DisplayEditorPanelScreen"));
-                cursor.Emit(OpCodes.Ldarg_0); // this
-                cursor.Emit(OpCodes.Call, to); // call reimplementation
-                cursor.Emit(OpCodes.Br, target); // skip rest of `if` statement
-            }
-            else
-            {
-                Console.WriteLine("Failed to modify puzzle editor screen (no 2nd match)!");
-                throw new Exception();
-            }
-        }
-        else
+        if (!method.HasBody)
         {
             Console.WriteLine("Failed to modify puzzle editor screen (no body)!");
             throw new Exception();
         }
+        
+        ILCursor cursor = new(new ILContext(method));
+        Instruction target = null; // will definitely be set
+
+        // kill off `flag5` and make the Upload puzzle button never clickable
+        if (!cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdloc(27)))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no 1st match)!");
+            throw new Exception();
+        }
+
+        cursor.Remove();
+        cursor.Emit(OpCodes.Ldc_I4_0);
+
+        if (!cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdflda("PuzzleEditorScreen", "field_2789"),
+                instr => instr.MatchCall(out MethodReference mref) && mref.Name.Equals("method_1085"),
+                instr =>
+                {
+                    bool ret = instr.OpCode == OpCodes.Brfalse;
+                    if (ret)
+                        target = (Instruction)instr.Operand;
+                    return ret;
+                }))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no 2nd match)!");
+            throw new Exception();
+        }
+
+        // "if(this.field_2789.method_1085()){" ... "} if (!this.field_2789.method_1085()){"
+        TypeDefinition holder = MonoModRule.Modder.FindType("PuzzleEditorScreen").Resolve();
+        MethodDefinition to = holder.Methods.First(m => m.Name.Equals("DisplayEditorPanelScreen"));
+        cursor.Emit(OpCodes.Ldarg_0); // this
+        cursor.Emit(OpCodes.Call, to); // call reimplementation
+        cursor.Emit(OpCodes.Br, target); // skip rest of `if` statement
+
+        // Carriage Return
+        cursor.Index = 0;
+        // Ding!
+
+        if (!cursor.TryGotoNext(MoveType.Before,
+            instr => instr.MatchLdfld(out FieldReference fr) && fr.Name == "field_2767",
+            instr => instr.MatchCall(out MethodReference mr) && mr.Name == "op_Implicit",
+            instr => instr.MatchLdloc(13)
+            ))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no puzzle name found)");
+            throw new Exception();
+        }
+
+        MethodDefinition getName = holder.Methods.First(m => m.Name.Equals("GetPuzzleName"));
+
+        cursor.RemoveRange(2);
+        cursor.Emit(OpCodes.Call, getName);
     }
 
     public static void PatchJournalScreen(MethodDefinition method, CustomAttribute attrib)
