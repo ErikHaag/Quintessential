@@ -17,6 +17,8 @@ class patch_Puzzle{
 	// Save using the right format, and set Steam user ID to 0
 	[PatchPuzzleIdWrite]
 	public extern void orig_method_1248(string path);
+
+	// Save .puzzle or .puzzle.yaml
 	public void method_1248(string path){
 		if(IsModdedPuzzle)
 			File.WriteAllText(path, YamlHelper.Serializer.Serialize(PuzzleModel.FromPuzzle((Puzzle)(object)this)));
