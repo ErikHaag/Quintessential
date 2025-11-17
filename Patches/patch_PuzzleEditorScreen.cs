@@ -7,15 +7,15 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ArrangeTypeModifiers
 
-using System;
-using System.Linq;
 using MonoMod;
 using Quintessential;
 using Quintessential.Internal;
-using Scrollbar = class_262;
+using System;
+using System.Linq;
+using AtomTypes = class_175;
 using InstructionTypes = class_169;
 using Permissions = enum_149;
-using AtomTypes = class_175;
+using Scrollbar = class_262;
 
 class patch_PuzzleEditorScreen{
 		
@@ -279,7 +279,7 @@ class patch_PuzzleEditorScreen{
 	private static string GetPuzzleName(Puzzle p) {
 		if (Input.IsShiftHeld())
         {
-			return p.field_2766;
+			return "ID: " + p.field_2766 + "\nHASH: " + p.field_2783.ToString();
 		}
 		return p.field_2767;
     }

@@ -39,6 +39,9 @@ internal class patch_WorkshopManager{
 				Logger.Log(e);
 				continue;
 			}
+
+			fromModel.field_2783 = (uint)typeof(WorkshopManager).GetMethod("method_2238", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+				.Invoke(GameLogic.field_2434.field_2460, new object[]{puzzleFilePath});
 			// ReSharper disable once PossibleInvalidCastException
 			((patch_Puzzle)(object)fromModel).IsModdedPuzzle = true;
 			yield return fromModel;
