@@ -36,6 +36,9 @@ class PatchJournalScreen : Attribute { }
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchJournalPuzzleBackgrounds))]
 class PatchJournalPuzzleBackgrounds : Attribute { }
 
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchConduitInitializer))]
+class PatchConduitInitializer : Attribute { }
+
 static class MonoModRules
 {
 
@@ -351,5 +354,38 @@ static class MonoModRules
             Console.WriteLine("Failed to modify journal screen puzzle backgrounds (no body)!");
             throw new Exception();
         }
+    }
+
+    public static void PatchConduitInitializer(MethodDefinition method, CustomAttribute attrib)
+    {
+        MonoModRule.Modder.Log("Patching Conduit initializer");
+        if (!method.HasBody)
+        {
+            Console.WriteLine("Failed to modify conduit initializer (no body)!");
+            throw new Exception();
+        }
+
+        ILCursor cursor = new(new ILContext(method));
+
+        if (!cursor.TryGotoNext(MoveType.After,
+            instr => instr.MatchLdarga(1),
+            instr => instr.MatchCall(out MethodReference m) && m.ReturnType.Name == "bool",
+            instr => instr.MatchBrfalse(out ILLabel after)))
+        {
+            Console.WriteLine("Failed to modify conduit initializer (no production info branch)");
+            throw new Exception();
+        }
+        
+        Instruction ifBody = cursor.Next;
+        cursor.Index--;
+        cursor.Emit(OpCodes.Brtrue, ifBody);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate<Func<Puzzle, Maybe<class_117[]>>>(p => ((patch_Puzzle)(object)p).EngineConduits);
+        cursor.Emit(OpCodes.Ldarga_S, 3);
+
+        TypeDefinition maybeType = MonoModRule.Modder.FindType("Maybe").Resolve();
+        MethodDefinition maybeAssign = maybeType.Methods.First(m => m.Name.Equals("method_99"));
+
+        cursor.Emit(OpCodes.Call);
     }
 }

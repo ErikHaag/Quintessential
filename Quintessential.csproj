@@ -11,6 +11,11 @@
     <LangVersion>10</LangVersion>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<!-- Path to Opus Magnum folder, Contains Lightning.exe et.al -->
+		<OpusDir>C:\Program Files (x86)\Steam\steamapps\common\Opus Magnum</OpusDir>
+	</PropertyGroup>
+	
   <ItemGroup>
     <None Remove="Content\missing.png" />
   </ItemGroup>
@@ -21,28 +26,28 @@
 
   <ItemGroup>
     <Reference Include="Ionic.Zip.Reduced">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\Ionic.Zip.Reduced.dll</HintPath>
+      <HintPath>$(OpusDir)\Ionic.Zip.Reduced.dll</HintPath>
       <CopyLocal>False</CopyLocal>
     </Reference>
     <Reference Include="Lightning">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\IntermediaryLightning.exe</HintPath>
+      <HintPath>$(OpusDir)\IntermediaryLightning.exe</HintPath>
       <Private>false</Private>
       <CopyLocal>False</CopyLocal>
     </Reference>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\Mono.Cecil.dll</HintPath>
+      <HintPath>$(OpusDir)\Mono.Cecil.dll</HintPath>
       <CopyLocal>False</CopyLocal>
     </Reference>
     <Reference Include="MonoMod">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\MonoMod.exe</HintPath>
+      <HintPath>$(OpusDir)\MonoMod.exe</HintPath>
       <CopyLocal>False</CopyLocal>
     </Reference>
     <Reference Include="MonoMod.Common">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\MonoMod.Common.dll</HintPath>
+      <HintPath>$(OpusDir)\MonoMod.Common.dll</HintPath>
       <CopyLocal>False</CopyLocal>
     </Reference>
     <Reference Include="MonoMod.Utils">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Opus Magnum\MonoMod.Utils.dll</HintPath>
+      <HintPath>$(OpusDir)\MonoMod.Utils.dll</HintPath>
       <CopyLocal>False</CopyLocal>
     </Reference>
   </ItemGroup>
