@@ -32,6 +32,8 @@ public class PuzzleModel {
 	// production-related stuff, or null for non-production puzzles
 	public ProductionInfoM ProductionInfo = null;
 
+	public List<ConduitM> Conduits = null;
+
 	public static PuzzleModel FromPuzzle(Puzzle puzzle) {
 		PuzzleModel model = new(){
 			ID = puzzle.field_2766,
@@ -48,7 +50,17 @@ public class PuzzleModel {
 		foreach(var item in puzzle.field_2774)
 			model.Highlights.Add(new HexIndexM(item));
 		if(puzzle.field_2779.method_1085())
+			// if there's production cabinet info, use that
 			model.ProductionInfo = new ProductionInfoM(puzzle.field_2779.method_1087());
+		else if (((patch_Puzzle)(object)puzzle).EngineConduits.method_1085())
+		{
+			// otherwise, populate the engine conduits
+			model.Conduits = new();
+			foreach (var conduit in ((patch_Puzzle)(object)puzzle).EngineConduits.method_1087())
+			{
+				model.Conduits.Add(new ConduitM(conduit));
+			}
+		}
 		return model;
 	}
 
@@ -63,10 +75,17 @@ public class PuzzleModel {
 			field_2774 = model.Highlights.Select(k => k.FromModel()).ToArray(),
 			field_2780 = model.OutputMultiplier
 		};
-		if(model.ProductionInfo != null && model.ProductionInfo.Chambers.Count > 0){
-			ret.field_2779 = model.ProductionInfo.FromModel();
-			// Calculate bounds
-			ret.method_1247();
+		if(model.ProductionInfo != null) {
+			if (model.ProductionInfo.Chambers.Count > 0)
+			{
+				ret.field_2779 = model.ProductionInfo.FromModel();
+				// Calculate bounds
+				ret.method_1247();
+			}
+		} else if (model.Conduits != null)
+		{
+			// if it's not a cabinet, use these
+			((patch_Puzzle)(object)ret).EngineConduits = model.Conduits.Select(c => c.FromModel()).ToArray();
 		}
 		((patch_Puzzle)(object)ret).CustomPermissions = model.CustomPermissions;
 		return ret;
