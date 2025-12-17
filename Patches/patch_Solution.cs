@@ -8,7 +8,6 @@ public class patch_Solution
 
     public static bool GetConduits(Puzzle puzzle, out class_117[] conduits)
     {
-        conduits = default;
         if (puzzle.field_2779.method_99(out class_261 cabinetInfo))  {
             conduits = cabinetInfo.field_2072;
             return true;
