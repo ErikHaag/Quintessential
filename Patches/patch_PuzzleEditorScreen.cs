@@ -276,11 +276,18 @@ class patch_PuzzleEditorScreen{
 		return false;
 	}
 
-	private static string GetPuzzleName(Puzzle p) {
-		if (Input.IsShiftHeld())
-        {
-			return "ID: " + p.field_2766 + "\nHASH: " + p.field_2783.ToString();
+	private static bool DrawPuzzleButton(Puzzle p, Vector2 param_3552, int param_3025, bool param_3553, bool param_3554, bool param_4458, bool param_4459) {
+		bool shift = Input.IsShiftHeld();
+		string name = shift ? "ID: " + p.field_2766.Replace("_", "\\_") : p.field_2767;
+
+		// draw the button
+		ButtonDrawingLogic bdl = class_140.method_316(name, param_3552, param_3025, param_3553, param_3554);
+        bool flag = bdl.method_824(param_4458, param_4459);
+		if (shift)
+		{
+			// draw hash line
+			class_135.method_290("HASH: " + p.field_2783.ToString(), bdl.field_2307().Center + new Vector2(-15f, -24f), UI.SubTitle, UI.TextColor, (enum_0)1, 1f, 0.6f, float.MaxValue, param_3025 - 75, 0, default, null, int.MaxValue, param_3473: false, param_3474: true);
 		}
-		return p.field_2767;
+        return flag;
     }
 }

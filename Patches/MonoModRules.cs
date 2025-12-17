@@ -295,10 +295,30 @@ static class MonoModRules
             Console.WriteLine("Failed to modify puzzle editor screen (no puzzle name found)");
             throw new Exception();
         }
-
-        MethodDefinition getName = holder.Methods.First(m => m.Name.Equals("GetPuzzleName"));
-
         cursor.RemoveRange(2);
+
+        if (!cursor.TryGotoNext(MoveType.Before,
+            instr => instr.OpCode == OpCodes.Call,
+            instr => instr.MatchStloc(18),
+            instr => instr.MatchLdloca(18)))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no ButtonDrawLogic instantiation)");
+            throw new Exception();
+        }
+
+        cursor.RemoveRange(3);
+
+        if (!cursor.TryGotoNext(MoveType.Before,
+            instr => instr.OpCode == OpCodes.Call,
+            instr => instr.OpCode == OpCodes.Brfalse,
+            instr => instr.MatchLdloc(16)))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no ButtonDrawLogic call)");
+            throw new Exception();
+        }
+
+        MethodDefinition getName = holder.Methods.First(m => m.Name.Equals("DrawPuzzleButton"));
+        cursor.Remove();
         cursor.Emit(OpCodes.Call, getName);
     }
 
