@@ -10,7 +10,6 @@ using Chamber = class_189;
 using Conduit = class_117;
 using Vial = class_128;
 using AtomTypes = class_175;
-using System.Timers;
 
 namespace Quintessential.Serialization;
 
@@ -51,9 +50,11 @@ public class PuzzleModel {
 		foreach(var item in puzzle.field_2774)
 			model.Highlights.Add(new HexIndexM(item));
 		if(puzzle.field_2779.method_1085())
+			// if there's production cabinet info, use that
 			model.ProductionInfo = new ProductionInfoM(puzzle.field_2779.method_1087());
 		else if (((patch_Puzzle)(object)puzzle).EngineConduits.method_1085())
 		{
+			// otherwise, populate the engine conduits
 			model.Conduits = new();
 			foreach (var conduit in ((patch_Puzzle)(object)puzzle).EngineConduits.method_1087())
 			{
@@ -83,6 +84,7 @@ public class PuzzleModel {
 			}
 		} else if (model.Conduits != null)
 		{
+			// if it's not a cabinet, use these
 			((patch_Puzzle)(object)ret).EngineConduits = model.Conduits.Select(c => c.FromModel()).ToArray();
 		}
 		((patch_Puzzle)(object)ret).CustomPermissions = model.CustomPermissions;

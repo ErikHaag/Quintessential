@@ -358,7 +358,7 @@ static class MonoModRules
 
     public static void PatchConduitInitializer(MethodDefinition method, CustomAttribute attrib)
     {
-        MonoModRule.Modder.Log("Patching Conduit initializer");
+        MonoModRule.Modder.Log("Patching conduit initializer");
         if (!method.HasBody)
         {
             Console.WriteLine("Failed to modify conduit initializer (no body)!");
@@ -367,25 +367,44 @@ static class MonoModRules
 
         ILCursor cursor = new(new ILContext(method));
 
-        if (!cursor.TryGotoNext(MoveType.After,
-            instr => instr.MatchLdarga(1),
-            instr => instr.MatchCall(out MethodReference m) && m.ReturnType.Name == "bool",
-            instr => instr.MatchBrfalse(out ILLabel after)))
+        if (!cursor.TryGotoNext(MoveType.Before,
+           instr => instr.MatchLdarg(0),
+           instr => instr.OpCode == OpCodes.Ldfld,
+           instr => instr.MatchLdloca(1),
+           instr => instr.MatchCall(out MethodReference m) && m.ReturnType.Name == "Boolean",
+           instr => instr.OpCode == OpCodes.Brfalse))
         {
             Console.WriteLine("Failed to modify conduit initializer (no production info branch)");
             throw new Exception();
         }
-        
-        Instruction ifBody = cursor.Next;
-        cursor.Index--;
-        cursor.Emit(OpCodes.Brtrue, ifBody);
+        int begin = cursor.Index;
+        Instruction ifEnd = (Instruction)cursor.Instrs[cursor.Index + 4].Operand;
+        if (!cursor.TryGotoNext(MoveType.After,
+            instr => instr.MatchLdloc(1),
+            instr => instr.OpCode == OpCodes.Ldfld,
+            instr => instr.MatchStloc(3)
+        ))
+        {
+            Console.WriteLine("Failed to modify conduit initializer (no conduit assignment");
+            throw new Exception();
+        }
+        int end = cursor.Index;
+        cursor.Index = begin;
+        cursor.RemoveRange(end - begin);
+
+        TypeDefinition holder = MonoModRule.Modder.FindType("Solution").Resolve();
+        MethodDefinition to = holder.Methods.First(m => m.Name.Equals("GetConduits"));
+
+        // Puzzle
         cursor.Emit(OpCodes.Ldarg_0);
-        cursor.EmitDelegate<Func<Puzzle, Maybe<class_117[]>>>(p => ((patch_Puzzle)(object)p).EngineConduits);
-        cursor.Emit(OpCodes.Ldarga_S, 3);
-
-        TypeDefinition maybeType = MonoModRule.Modder.FindType("Maybe").Resolve();
-        MethodDefinition maybeAssign = maybeType.Methods.First(m => m.Name.Equals("method_99"));
-
-        cursor.Emit(OpCodes.Call);
+        // conduit list address
+        cursor.Emit(OpCodes.Ldloca, 3);
+        // Solution.GetConduits
+        cursor.Emit(OpCodes.Call, to);
+        // if body skipping
+        cursor.Emit(OpCodes.Brfalse, ifEnd);
+        // assign the first conduit's ID to 100
+        cursor.Emit(OpCodes.Ldc_I4, 100);
+        cursor.Emit(OpCodes.Stloc, 2);
     }
 }
