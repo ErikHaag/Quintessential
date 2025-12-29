@@ -15,6 +15,7 @@ public static class QApi {
 	public static readonly List<Pair<PartType, PartType>> PanelParts = new();
 	public static readonly List<AtomType> ModAtomTypes = new();
 	public static readonly List<Action<Sim, bool>> ToRunAfterCycle = new();
+	public static readonly List<Pair<string, SolutionPayloadHandler>> SolutionPayloadHandler = new();
 	public static readonly List<PuzzleOption> PuzzleOptions = new();
 
 	public static void Init(){
@@ -111,6 +112,18 @@ public static class QApi {
 	}
 
 	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="address"></param>
+	/// <param name="handler"></param>
+	public static void AddSolutionPayloadHandler(string address, SolutionPayloadHandler handler)
+	{
+		SolutionPayloadHandler.Add(new(address, handler));
+	}
+
+
+
+	/// <summary>
 	/// Adds a chamber type, used by name in production puzzle files.
 	/// </summary>
 	/// <param name="chamberType">The chamber type to add.</param>
@@ -150,6 +163,8 @@ public static class QApi {
 /// <param name="editor">The solution editor that the part is being displayed in.</param>
 /// <param name="helper">An object containing functions for rendering images, at different positions/rotations and lightmaps.</param>
 public delegate void PartRenderer(Part part, Vector2 position, SolutionEditorBase editor, RenderHelper helper);
+
+public delegate void SolutionPayloadHandler(Solution solution, string data);
 
 /// <summary>
 /// A static class containing extensions that make PartRenderers easier to use.

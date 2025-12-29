@@ -4,6 +4,12 @@ using PartType = class_139;
 
 class patch_Part{
 	
+	public bool method_1203()
+	{
+		PartType t = method_1159();
+		return !(t.field_1543 || ((patch_PartType)(object)t).IsForced);
+	}
+
 	// this part type
 	[MonoModIgnore]
 	public extern PartType method_1159();

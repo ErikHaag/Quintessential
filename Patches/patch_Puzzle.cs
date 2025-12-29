@@ -4,6 +4,8 @@ using MonoMod;
 using Quintessential;
 using Quintessential.Serialization;
 
+using Conduit = class_117;
+
 class patch_Puzzle{
 	
 	// Custom puzzle data
@@ -13,7 +15,10 @@ class patch_Puzzle{
 	// Controls whether this is saved to/from a vanilla `.puzzle` file, or a Quintessential `.puzzle.yaml` file
 	// Don't set this if you don't know what you're doing!
 	public bool IsModdedPuzzle = false;
-	
+
+	public Maybe<Conduit[]> EngineConduits = struct_18.field_1431;
+	public Maybe<Payloads> Payloads = struct_18.field_1431;
+
 	// Save using the right format, and set Steam user ID to 0
 	[PatchPuzzleIdWrite]
 	public extern void orig_method_1248(string path);
