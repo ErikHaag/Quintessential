@@ -15,7 +15,7 @@ public class patch_Solution
             return true;
         }
         return ((patch_Puzzle)(object)puzzle).EngineConduits.method_99(out conduits);
-    }
+    } 
 
     public static void ApplyChanges(Puzzle puzzle, Solution solution)
     {

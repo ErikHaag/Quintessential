@@ -51,6 +51,7 @@ public class PuzzleModel {
 		foreach(var item in puzzle.field_2774)
 			model.Highlights.Add(new HexIndexM(item));
 		if(puzzle.field_2779.method_1085())
+			// if there's production cabinet info, use that
 			model.ProductionInfo = new ProductionInfoM(puzzle.field_2779.method_1087());
 		else if (((patch_Puzzle)(object)puzzle).EngineConduits.method_1085())
 		{
