@@ -10,11 +10,28 @@ public class QuintessentialAsMod : QuintessentialMod {
 
     public override void LoadPuzzleContent()
     {
+        #region Puzzle Payload Handlers
         QApi.AddPuzzlePayloadHandler("Quintessential:dummy", (puzzle, data) =>
         {
             // do nothing
         });
 
+        QApi.AddPuzzlePayloadHandler("Quintessential:log", (puzzle, data) =>
+        {
+            Logger.Log(data);
+        });
+        #endregion
+        #region Solution Payload Handlers
+        QApi.AddSolutionPayloadHandler("Quintessential:dummy", (solution, data) =>
+        {
+            // do nothing
+        });
+
+        QApi.AddSolutionPayloadHandler("Quintessential:log", (solution, data) =>
+        {
+            Logger.Log(data);
+        });
+        // Q,R,Turns,PartID
         QApi.AddSolutionPayloadHandler("Quintessential:place", (solution, data) =>
         {
             string[] parameters = data.Split(',');
@@ -27,6 +44,7 @@ public class QuintessentialAsMod : QuintessentialMod {
 
             if (!class_191.method_498(parameters[3]).method_99(out class_139 partType))
             {
+                // place equalibrium instead
                 partType = class_191.field_1782;
             }
 
@@ -34,6 +52,7 @@ public class QuintessentialAsMod : QuintessentialMod {
             solution.method_1939(part, position);
             part.method_1197(solution, rotation);
         });
+        #endregion
     }
 
     public override void PostLoad() { }

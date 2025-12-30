@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using MonoMod;
 using Quintessential;
@@ -6,8 +7,10 @@ using Quintessential.Serialization;
 
 using Conduit = class_117;
 
-class patch_Puzzle{
-	
+#pragma warning disable IDE1006 // Name rule violation, name should start with uppercase letter
+
+class patch_Puzzle
+{
 	// Custom puzzle data
 	public HashSet<string> CustomPermissions = new();
 	
@@ -38,23 +41,10 @@ class patch_Puzzle{
 	}
 
 	public static extern Puzzle orig_method_1249(string path);
-	public static Puzzle method_1249(string path){
-		if(Path.GetExtension(path) == ".yaml"){
+	public static Puzzle method_1249(string path) {
+		if(Path.GetExtension(path) == ".yaml") {
 			Puzzle p = PuzzleModel.FromModel(YamlHelper.Deserializer.Deserialize<PuzzleModel>(File.ReadAllText(path)));
 			((patch_Puzzle)(object)p).IsModdedPuzzle = true;
-			if (((patch_Puzzle)(object)p).Payloads.method_99(out Payloads payloads))
-			{
-				foreach (Payloads.Payload payload in payloads.PuzzleInitialization)
-				{
-					foreach (Pair<string, PuzzlePayloadHandler> handler in QApi.PuzzlePayloadHandlers)
-					{
-						if (handler.Left.Equals(payload.Address))
-						{
-							handler.Right(p, payload.Data);
-						}
-					}
-				}
-			}
 			return p;
 		}
 		return orig_method_1249(path);

@@ -18,7 +18,10 @@ using InstructionTypes = class_169;
 using Permissions = enum_149;
 using Scrollbar = class_262;
 
-class patch_PuzzleEditorScreen{
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
+
+class patch_PuzzleEditorScreen
+{
 		
 	private Scrollbar scrollbar; // initializer is not merged
 

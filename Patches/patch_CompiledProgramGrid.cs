@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 #pragma warning disable CS0626 // Method, operator, or accessor is marked external and has no attributes on it
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 
 public class patch_CompiledProgramGrid
 {
