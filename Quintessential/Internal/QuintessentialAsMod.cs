@@ -10,9 +10,14 @@ public class QuintessentialAsMod : QuintessentialMod {
 
     public override void LoadPuzzleContent()
     {
+        QApi.AddPuzzlePayloadHandler("Quintessential:dummy", (puzzle, data) =>
+        {
+            // do nothing
+        });
+
         QApi.AddSolutionPayloadHandler("Quintessential:place", (solution, data) =>
         {
-            String[] parameters = data.Split(',');
+            string[] parameters = data.Split(',');
             if (parameters.Length != 4)
             {
                 return;

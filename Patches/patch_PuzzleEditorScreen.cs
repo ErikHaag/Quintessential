@@ -12,6 +12,7 @@ using Quintessential;
 using Quintessential.Internal;
 using System;
 using System.Linq;
+using YamlDotNet.Core;
 using AtomTypes = class_175;
 using InstructionTypes = class_169;
 using Permissions = enum_149;
@@ -211,7 +212,9 @@ class patch_PuzzleEditorScreen{
 			var rulesCorner = instructionsCorner + new Vector2(0, ruleSize.Y * 3.5f);
 			class_140.method_317(class_134.method_253("Quintessential Rules", ""), rulesCorner - new Vector2(0, ruleSize.Y * .5f), 900, false, true);
 			if(UI.DrawCheckbox(rulesCorner + new Vector2(ruleSize.X * 0 + 5, ruleSize.Y * 1), "Enable Modded Content", conv.IsModdedPuzzle))
+			{
 				conv.ConvertFormat(!conv.IsModdedPuzzle);
+			}
 			// TODO: will probably move to a separate mod
 			//UI.DrawCheckbox(rulesCorner + new Vector2(ruleSize.X * 1 + 5, ruleSize.Y * 1), "Allow Overlap", false);
 			
@@ -276,12 +279,21 @@ class patch_PuzzleEditorScreen{
 		return false;
 	}
 
+	public static class_256 NoSaveTexture = class_235.method_615("Quintessential/no_saving");
+
 	private static bool DrawPuzzleButton(Puzzle p, Vector2 param_3552, int param_3025, bool param_3553, bool param_3554, bool param_4458, bool param_4459) {
 		bool shift = Input.IsShiftHeld();
 		string name = shift ? "ID: " + p.field_2766.Replace("_", "\\_") : p.field_2767;
 
 		// draw the button
 		ButtonDrawingLogic bdl = class_140.method_316(name, param_3552, param_3025, param_3553, param_3554);
+		
+        if (!((patch_Puzzle)(object)p).CanSave)
+        {
+			// if this can't be saved, draw the no-save icon
+            UI.DrawTexture(NoSaveTexture, bdl.field_2307().TopLeft + new Vector2(10, -40));
+        }
+
         bool flag = bdl.method_824(param_4458, param_4459);
 		if (shift)
 		{
@@ -290,4 +302,13 @@ class patch_PuzzleEditorScreen{
 		}
         return flag;
     }
+
+	private bool CanSave()
+	{
+		if (!field_2789.method_99(out Puzzle p))
+		{
+			return false;
+		}
+		return ((patch_Puzzle)(object)p).CanSave;
+	}
 }

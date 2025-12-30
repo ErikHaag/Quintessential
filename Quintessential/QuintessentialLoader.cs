@@ -565,15 +565,17 @@ SomeZipIDontLike.zip");
     private static bool TryLoadPuzzle(string basePath, string puzzleName, string campaignTitle, out Puzzle puzzle) {
         try {
             string baseName = Path.Combine(basePath, puzzleName);
+            string extension;
             if (File.Exists(baseName + ".puzzle")) {
-                puzzle = Puzzle.method_1249(baseName + ".puzzle");
+                extension = ".puzzle";
             } else if (File.Exists(baseName + ".puzzle.yaml")) {
-                puzzle = PuzzleModel.FromModel(YamlHelper.Deserializer.Deserialize<PuzzleModel>(File.ReadAllText(baseName + ".puzzle.yaml")));
+                extension = ".puzzle.yaml";
             } else {
                 Logger.Log($"Puzzle \"{puzzleName}\" from \"{campaignTitle}\" doesn't exist, ignoring");
                 puzzle = null;
                 return false;
             }
+            puzzle = Puzzle.method_1249(baseName + extension);
 
             // even if it was loaded from a vanilla format puzzle file, it was included in a mod and may rely on modded behaviour
             // these are never saved over and could have been modified directly by the campaign mod, so this is safe

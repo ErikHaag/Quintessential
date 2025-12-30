@@ -320,6 +320,36 @@ static class MonoModRules
         MethodDefinition getName = holder.Methods.First(m => m.Name.Equals("DrawPuzzleButton"));
         cursor.Remove();
         cursor.Emit(OpCodes.Call, getName);
+
+        if (!cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStloc(26)))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no flag3 assignment)");
+            throw new Exception();
+        }
+
+        to = holder.Methods.First(m => m.Name.Equals("CanSave"));
+        cursor.Index++;
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Call, to);
+        cursor.Emit(OpCodes.Ldloc, 25);
+        cursor.Emit(OpCodes.And);
+        // use flag8 (transmutes into param_4997?)
+        cursor.Emit(OpCodes.Stloc, 31);
+
+        if (!(cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdstr("Rename")) && cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdloc(26))))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no rename button drawing)");
+            throw new Exception();
+        }
+        cursor.Remove();
+        cursor.Emit(OpCodes.Ldloc, 31);
+        if (!(cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdstr("Copy")) && cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdloc(26))))
+        {
+            Console.WriteLine("Failed to modify puzzle editor screen (no copy button drawing)");
+            throw new Exception();
+        }
+        cursor.Remove();
+        cursor.Emit(OpCodes.Ldloc, 31);
     }
 
     public static void PatchJournalScreen(MethodDefinition method, CustomAttribute attrib)
@@ -433,7 +463,7 @@ static class MonoModRules
             Console.WriteLine("Failed to modify solution initializer (no end of if body)");
             throw new Exception();
         }
-        to = holder.Methods.First(m => m.Name.Equals("ApplyChanges"));
+        to = holder.Methods.First(m => m.Name.Equals("ApplySolutionChanges"));
 
         // Why does cursor.MoveAfterLabels not work like I expect?
         cursor.Emit(OpCodes.Ldarg_0);

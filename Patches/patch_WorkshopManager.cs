@@ -57,4 +57,14 @@ internal class patch_WorkshopManager{
 			? Path.Combine(class_269.field_2102, "custom", puzzle.field_2766 + ".puzzle.yaml")
 			: orig_method_2237(puzzle);
 	}
+
+	public extern void orig_method_2241(Puzzle puzzle);
+	public void method_2241(Puzzle puzzle)
+	{
+		// only save if valid too
+		if (((patch_Puzzle)(object)puzzle).CanSave)
+		{
+			orig_method_2241(puzzle);
+		}
+	}
 }

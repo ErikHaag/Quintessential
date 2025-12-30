@@ -15,7 +15,8 @@ public static class QApi {
 	public static readonly List<Pair<PartType, PartType>> PanelParts = new();
 	public static readonly List<AtomType> ModAtomTypes = new();
 	public static readonly List<Action<Sim, bool>> ToRunAfterCycle = new();
-	public static readonly List<Pair<string, SolutionPayloadHandler>> SolutionPayloadHandler = new();
+	public static readonly List<Pair<string, PuzzlePayloadHandler>> PuzzlePayloadHandlers = new();
+	public static readonly List<Pair<string, SolutionPayloadHandler>> SolutionPayloadHandlers = new();
 	public static readonly List<PuzzleOption> PuzzleOptions = new();
 
 	public static void Init(){
@@ -112,13 +113,23 @@ public static class QApi {
 	}
 
 	/// <summary>
-	/// 
+	/// Adds a handler for Puzzle payloads to be delivered
 	/// </summary>
-	/// <param name="address"></param>
-	/// <param name="handler"></param>
+	/// <param name="address">Address to be handled</param>
+	/// <param name="handler">Payload Handler</param>
+	public static void AddPuzzlePayloadHandler(string address, PuzzlePayloadHandler handler)
+	{
+		PuzzlePayloadHandlers.Add(new(address, handler));
+	}
+
+	/// <summary>
+	/// Adds a handler for solution payloads to be delivered
+	/// </summary>
+	/// <param name="address">Address to be handled</param>
+	/// <param name="handler">Payload handler</param>
 	public static void AddSolutionPayloadHandler(string address, SolutionPayloadHandler handler)
 	{
-		SolutionPayloadHandler.Add(new(address, handler));
+		SolutionPayloadHandlers.Add(new(address, handler));
 	}
 
 
@@ -164,6 +175,19 @@ public static class QApi {
 /// <param name="helper">An object containing functions for rendering images, at different positions/rotations and lightmaps.</param>
 public delegate void PartRenderer(Part part, Vector2 position, SolutionEditorBase editor, RenderHelper helper);
 
+/// <summary>
+/// A function to modify a puzzle at load time. When used, the puzzle cannot be saved.
+/// If needed, throwing an error will prevent this puzzle from loading
+/// </summary>
+/// <param name="puzzle">The puzzle being modified</param>
+/// <param name="data">The extra data</param>
+public delegate void PuzzlePayloadHandler(Puzzle puzzle, string data);
+
+/// <summary>
+/// A function to modify a new solution. throwing an error will crash the game.
+/// </summary>
+/// <param name="solution">The solution being modified</param>
+/// <param name="data">The extra data</param>
 public delegate void SolutionPayloadHandler(Solution solution, string data);
 
 /// <summary>

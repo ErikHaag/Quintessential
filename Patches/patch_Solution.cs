@@ -1,6 +1,5 @@
 ﻿using MonoMod;
 using Quintessential;
-using System;
 
 public class patch_Solution
 {
@@ -17,12 +16,12 @@ public class patch_Solution
         return ((patch_Puzzle)(object)puzzle).EngineConduits.method_99(out conduits);
     } 
 
-    public static void ApplyChanges(Puzzle puzzle, Solution solution)
+    public static void ApplySolutionChanges(Puzzle puzzle, Solution solution)
     {
         if (((patch_Puzzle)(object)puzzle).Payloads.method_99(out Payloads payloads)) {
             foreach (Payloads.Payload p in payloads.SolutionInitialization)
             {
-                foreach (var handler in QApi.SolutionPayloadHandler)
+                foreach (var handler in QApi.SolutionPayloadHandlers)
                 {
                     if (p.Address.Equals(handler.Left))
                     {

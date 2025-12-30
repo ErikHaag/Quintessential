@@ -15,6 +15,6 @@ public class Payloads
         }
     }
 
-    //public List<Payload> PuzzleInitialization = new();
+    public List<Payload> PuzzleInitialization = new();
     public List<Payload> SolutionInitialization = new();
 }

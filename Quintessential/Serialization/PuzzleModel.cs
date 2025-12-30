@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Net;
+using AtomTypes = class_175;
 using Bond = class_277;
 using BondType = enum_126;
-using PermissionFlags = enum_149;
-using ProductionInfo = class_261;
 using Chamber = class_189;
 using Conduit = class_117;
+using PermissionFlags = enum_149;
+using ProductionInfo = class_261;
 using Vial = class_128;
-using AtomTypes = class_175;
 
 namespace Quintessential.Serialization;
 
@@ -326,7 +326,7 @@ public class PuzzleModel {
 	public class PayloadsM
 	{
 		// change puzzle behaviour at runtime
-		//public List<PayloadM> PuzzleInitialization = new();
+		public List<PayloadM> PuzzleInitialization = new();
 		// changes new solutions
 		public List<PayloadM> SolutionInitialization = new();
 
@@ -334,12 +334,6 @@ public class PuzzleModel {
 
 		public PayloadsM(Payloads p)
 		{
-			/*
-			foreach (Payloads.Payload pl in p.PuzzleInitialization)
-			{
-				PuzzleInitialization.Add(new(pl));
-			}
-			*/
 			foreach (Payloads.Payload pl in p.SolutionInitialization)
 			{
 				SolutionInitialization.Add(new(pl));
@@ -349,15 +343,21 @@ public class PuzzleModel {
         public Payloads FromModel()
         {
             Payloads ret = new();
-			/*
 			foreach (PayloadM pl in PuzzleInitialization)
 			{
-				ret.PuzzleInitialization.Add(pl.FromModel());
+                if (!QApi.PuzzlePayloadHandlers.Exists(sph => sph.Left == pl.Address))
+                {
+                    throw new Exception("No puzzle payload handler for address \"" + pl.Address + "\"");
+                }
+                ret.PuzzleInitialization.Add(pl.FromModel());
 			}
-			*/
 			foreach (PayloadM pl in SolutionInitialization)
 			{
-				ret.SolutionInitialization.Add(pl.FromModel());
+                if (!QApi.SolutionPayloadHandlers.Exists(sph => sph.Left == pl.Address))
+                {
+                    throw new Exception("No solution payload handler for address \"" + pl.Address + "\"");
+                }
+                ret.SolutionInitialization.Add(pl.FromModel());
 			}
 
 			return ret;
@@ -377,10 +377,6 @@ public class PuzzleModel {
 
         public Payloads.Payload FromModel()
         {
-			if (!QApi.SolutionPayloadHandler.Exists(sph => sph.Left == Address))
-			{
-	           throw new Exception("No payload handler for address \"" + Address + "\"");
-			}
 			return new(Address, Data);
         }
     }

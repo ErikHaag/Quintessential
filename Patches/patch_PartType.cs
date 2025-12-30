@@ -8,6 +8,6 @@ class patch_PartType{
 	// When non-null, the predicate is run on the puzzle's set of custom permissions to check that the part is allowed
 	public Predicate<HashSet<string>> CustomPermissionCheck;
 
-	// When true, this part type can't be cloned or removed from the board, Akin to a conduit.
+	// When true, this part type can't be removed from the board, use this with field_1552 to prevent cloning this part
 	public bool IsForced = false;
 }
