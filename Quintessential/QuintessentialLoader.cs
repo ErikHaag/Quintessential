@@ -554,6 +554,11 @@ SomeZipIDontLike.zip");
                     field_2570 = chapter.Description,
                     field_2571 = chapter.Puzzles.SelectMany(puzzleName =>
                         TryLoadPuzzle(journal.Path, puzzleName, journal.Title, out var puzzle) ? new[] { puzzle } : new Puzzle[0]).ToArray()
+                        foreach (var puzzle in volume.field_2571) {
+                            Array.Resize(ref Puzzles.field_2816, Puzzles.field_2816.Length + 1);
+                            Puzzles.field_2816[Puzzles.field_2816.Length - 1] = puzzle;
+                            } //this is a little bit of a patchy method of doing it, i'm not sure the exact form the journal puzzle array takes and i'm a little bit tired from testing it, also taken from icwass RMC journal code
+                            
                 }).ToList();
             foreach (JournalVolume jv in volumes) {
                 Logger.Log($"Journal {jv.field_2569} has {jv.field_2571.Length} puzzles");
