@@ -68,7 +68,7 @@ class ModsScreen : IScreen {
 				}
 			
 			// expand the scroll area to cover the entire displayed area
-			modsListScrollbar.method_707(y + 132);
+			modsListScrollbar.method_707(y + 212);
 		}
 		
 		// draw mod options panel
