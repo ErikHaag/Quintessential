@@ -3,14 +3,16 @@ using System.Collections.Generic;
 
 class patch_SolutionEditorScreen
 {
+    [MonoModReplace]
     public static HexIndex method_2130(Solution param_5729, Part param_5730)
     {
         // not the prettiest, but now it won't crash!
         HexIndex primaryResut = new(0, 0);
         HexIndex secondaryResult = new(0, 0);
-        static int dot(HexIndex h1, HexIndex h2) => ((2 * h1.Q + h1.R) * (2 * h2.Q + h2.R) + 3 * h1.R * h2.R) / 4;
+        static int dot(HexIndex h1, HexIndex h2) => (2 * h1.Q + h1.R) * (2 * h2.Q + h2.R) + 3 * h1.R * h2.R;
         int maxDistance = 0;
-
+        int bestX = int.MinValue;
+        int bestY = int.MinValue;
         foreach (HexIndex offset in method_2131(param_5729, param_5730))
         {
             bool alignedFlag = offset.Q == 0 || offset.R == 0 || offset.ImpliedS == 0;
@@ -24,11 +26,19 @@ class patch_SolutionEditorScreen
             {
                 HexIndex dir = HexIndex.AdjacentOffsets[i];
                 int dist = dot(dir, offset);
+                int actDist = dist >> 2;
                 int absDist = dist > 0 ? dist : -dist;
-                if (absDist > maxDistance)
+                HexIndex potentialHandle = new(actDist * dir.Q, actDist * dir.R);
+                int x = 2 * potentialHandle.Q + potentialHandle.R;
+                if (absDist > maxDistance
+                    || (absDist == maxDistance && (x > bestX
+                    || (x == bestX && potentialHandle.R > bestY)
+                )))
                 {
-                    secondaryResult = new HexIndex(dist * dir.Q, dist * dir.R);
+                    secondaryResult = potentialHandle;
                     maxDistance = absDist;
+                    bestX = x;
+                    bestY = potentialHandle.R;
                 }
             }
         }
@@ -43,7 +53,7 @@ class patch_SolutionEditorScreen
         return primaryResut;
     }
 
-    [MonoMod.MonoModIgnore]
+    [MonoModIgnore]
     public static extern HashSet<HexIndex> method_2131(Solution param_5731, Part param_5732);
 
 }
