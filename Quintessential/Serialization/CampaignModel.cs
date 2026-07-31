@@ -4,49 +4,57 @@ using YamlDotNet.Serialization;
 
 namespace Quintessential.Serialization;
 
-public class CampaignModel {
+public class CampaignModel
+{
 
-	public string Name { get; set; }
+    public string Name { get; set; }
 
-	public string Title { get; set; }
+    public string Title { get; set; }
 
-	public IList<ChapterModel> Chapters { get; set; }
+    public IList<ChapterModel> Chapters { get; set; }
 
-	[YamlIgnore]
-	public string Path = "";
+    [YamlIgnore]
+    public string Path = "";
 }
 
-public class ChapterModel {
+public class ChapterModel
+{
 
-	public string Title { get; set; }
+    public string Title { get; set; }
 
-	public string Subtitle { get; set; }
+    public string Subtitle { get; set; }
 
-	public string Place { get; set; }
+    public string Place { get; set; }
 
-	public string Background { get; set; }
+    public string Background { get; set; }
 
-	// TODO: wheel icons
+    // TODO: wheel icons
 
-	public IList<EntryModel> Entries { get; set; }
+    public IList<EntryModel> Entries { get; set; }
 }
 
-public class EntryModel {
+public class EntryModel
+{
 
-	// TODO: multiple requirements, documents, tutorials
+    // TODO: multiple requirements, documents, tutorials
 
-	public string Type { get; set; } = "puzzle";
-	
-	public string ID { get; set; }
+    public string Type { get; set; } = "puzzle";
 
-	public string Title { get; set; }
+    public string ID { get; set; }
 
-	public string Puzzle { get; set; }
+    public string Title { get; set; }
 
-	public string Requires { get; set; }
-	
-	public string Icon { get; set; }
-	public string IconSmall { get; set; }
-	
-	public bool NoStoryPanel{ get; set; }
+    public string Puzzle { get; set; }
+
+
+    public List<PuzzleModel.PayloadM> Payloads { get; set; } = new List<PuzzleModel.PayloadM>();
+
+    public string Song { get; set; } = "solving_3";
+
+    public string Requires { get; set; }
+
+    public string Icon { get; set; }
+    public string IconSmall { get; set; }
+
+    public bool NoStoryPanel { get; set; }
 }

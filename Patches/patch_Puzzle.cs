@@ -17,7 +17,7 @@ class patch_Puzzle{
 	public bool IsModdedPuzzle = false;
 
 	public Maybe<Conduit[]> EngineConduits = struct_18.field_1431;
-	public Maybe<Payloads> Payloads = struct_18.field_1431;
+	public Maybe<PuzzlePayloadSet> Payloads = struct_18.field_1431;
 
 	// Save using the right format, and set Steam user ID to 0
 	[PatchPuzzleIdWrite]

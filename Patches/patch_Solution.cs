@@ -19,8 +19,8 @@ public class patch_Solution
 
     public static void ApplyChanges(Puzzle puzzle, Solution solution)
     {
-        if (((patch_Puzzle)(object)puzzle).Payloads.method_99(out Payloads payloads)) {
-            foreach (Payloads.Payload p in payloads.SolutionInitialization)
+        if (((patch_Puzzle)(object)puzzle).Payloads.method_99(out PuzzlePayloadSet payloads)) {
+            foreach (Payload p in payloads.SolutionInitialization)
             {
                 foreach (var handler in QApi.SolutionPayloadHandler)
                 {

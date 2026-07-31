@@ -332,7 +332,7 @@ public class PuzzleModel {
 
 		public PayloadsM(){}
 
-		public PayloadsM(Payloads p)
+		public PayloadsM(PuzzlePayloadSet p)
 		{
 			/*
 			foreach (Payloads.Payload pl in p.PuzzleInitialization)
@@ -340,15 +340,15 @@ public class PuzzleModel {
 				PuzzleInitialization.Add(new(pl));
 			}
 			*/
-			foreach (Payloads.Payload pl in p.SolutionInitialization)
+			foreach (Payload pl in p.SolutionInitialization)
 			{
 				SolutionInitialization.Add(new(pl));
 			}
 		}
 
-        public Payloads FromModel()
+        public PuzzlePayloadSet FromModel()
         {
-            Payloads ret = new();
+            PuzzlePayloadSet ret = new();
 			/*
 			foreach (PayloadM pl in PuzzleInitialization)
 			{
@@ -369,13 +369,13 @@ public class PuzzleModel {
 		public string Data;
 
 		public PayloadM(){}
-        public PayloadM(Payloads.Payload pl)
+        public PayloadM(Payload pl)
         {
 			Address = pl.Address;
 			Data = pl.Data;
         }
 
-        public Payloads.Payload FromModel()
+        public Payload FromModel()
         {
 			if (!QApi.SolutionPayloadHandler.Exists(sph => sph.Left == Address))
 			{
