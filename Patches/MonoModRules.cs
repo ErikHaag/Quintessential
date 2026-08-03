@@ -10,40 +10,69 @@ using System.Linq;
 namespace MonoMod;
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSettingsStaticInit))]
-class PatchSettingsStaticInit : Attribute { }
+class PatchSettingsStaticInit : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchPuzzleIdWrite))]
-class PatchPuzzleIdWrite : Attribute { }
+class PatchPuzzleIdWrite : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchScoreManagerLoad))]
-class PatchScoreManagerLoad : Attribute { }
+class PatchScoreManagerLoad : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchGifRecorderFrame))]
-class PatchGifRecorderFrame : Attribute { }
+class PatchGifRecorderFrame : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchMoleculeEditorScreenAtomTray))]
-class PatchMoleculeEditorScreenAtomTray : Attribute { }
+class PatchMoleculeEditorScreenAtomTray : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchMoleculeEditorScreenMoleculeError))]
-class PatchMoleculeEditorScreenMoleculeError : Attribute { }
+class PatchMoleculeEditorScreenMoleculeError : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchPuzzleEditorScreen))]
-class PatchPuzzleEditorScreen : Attribute { }
+class PatchPuzzleEditorScreen : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchJournalScreen))]
-class PatchJournalScreen : Attribute { }
+class PatchJournalScreen : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchJournalPuzzleBackgrounds))]
-class PatchJournalPuzzleBackgrounds : Attribute { }
+class PatchJournalPuzzleBackgrounds : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSolutionInitializer))]
-class PatchSolutionInitializer : Attribute { }
+class PatchSolutionInitializer : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchGlyphEffectConstructor))]
-class PatchGlyphEffectConstructor : Attribute { }
+class PatchGlyphEffectConstructor : Attribute
+{
+}
 
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchGlyphEffectRenderer))]
-class PatchGlyphEffectRenderer : Attribute { }
+class PatchGlyphEffectRenderer : Attribute
+{
+}
+
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchGlyphBehaviour))]
+class PatchGlyphBehaviour : Attribute
+{
+}
 
 static class MonoModRules
 {
@@ -492,7 +521,7 @@ static class MonoModRules
         }
 
         ILCursor gremlin = new(new ILContext(method));
-       
+
         TypeDefinition holder = MonoModRule.Modder.FindType("Color").Resolve();
         FieldDefinition colorWhite = holder.Fields.First((f) => f.IsStatic && f.Name == "White");
 
@@ -519,5 +548,43 @@ static class MonoModRules
         gremlin.Remove();
         gremlin.Emit(OpCodes.Ldloc, 1);
         gremlin.Emit(OpCodes.Ldfld, colorProp);
+    }
+
+    public static void PatchGlyphBehaviour(MethodDefinition method, CustomAttribute attrib)
+    {
+        MonoModRule.Modder.Log("Patching glyph Behaviour");
+        if (!method.HasBody)
+        {
+            Console.WriteLine("Unable to patch glyph behaviour (no body)");
+            throw new Exception();
+        }
+        ILCursor gremlin = new(new ILContext(method));
+
+        if (!gremlin.TryGotoNext(MoveType.Before,
+            instr => instr.MatchLdloc(6),
+            instr => instr.MatchLdfld(out FieldReference f) && f.Name == nameof(Sim.class_402.field_3841),
+            instr => instr.MatchCallvirt(out MethodReference m) && m.Name == nameof(Part.method_1159),
+            instr => instr.MatchLdfld(out FieldReference f) && f.Name == nameof(class_139.field_1538),
+            instr => instr.MatchLdlen()
+        ))
+        {
+            Console.WriteLine("Unable to patch glyph behaviour (no bonder check)");
+            throw new Exception();
+        }
+
+        TypeDefinition holder = MonoModRule.Modder.FindType("Sim").Resolve();
+        MethodDefinition to = holder.Methods.First(m => m.Name.Equals("RunMidcycleDelegates"));
+        Instruction oldTarget = gremlin.Next;
+        gremlin.Emit(OpCodes.Ldarg_0);
+        Instruction newTarget = gremlin.Previous;
+        gremlin.Emit(OpCodes.Ldloc, 6);
+        gremlin.Emit(OpCodes.Ldloc, 7);
+        gremlin.Emit(OpCodes.Ldarg_1);
+        gremlin.Emit(OpCodes.Call, to);
+        // I don't know why it never works, but MonoMod's goto and branch handling is not functional, or I don't know how it works.
+        foreach (var v in gremlin.Instrs.Where(v => v.Operand is Instruction t && t == oldTarget))
+        {
+            v.Operand = newTarget;
+        }
     }
 }

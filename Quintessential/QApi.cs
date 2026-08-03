@@ -14,7 +14,8 @@ public static class QApi {
 	public static readonly List<Pair<Predicate<Part>, PartRenderer>> PartRenderers = new();
 	public static readonly List<Pair<PartType, PartType>> PanelParts = new();
 	public static readonly List<AtomType> ModAtomTypes = new();
-	public static readonly List<Action<Sim, bool>> ToRunAfterCycle = new();
+    public static readonly List<Action<Sim, Part, PartSimState, bool>> ToRunDuringCycle = new();
+    public static readonly List<Action<Sim, bool>> ToRunAfterCycle = new();
 	public static readonly List<Pair<string, SolutionPayloadHandler>> SolutionPayloadHandler = new();
 	public static readonly List<PuzzleOption> PuzzleOptions = new();
 
@@ -86,11 +87,20 @@ public static class QApi {
 		AtomTypes.field_1691[len - 1] = type;
 	}
 
-	/// <summary>
-	/// Runs the given action at the end of every half-cycle.
-	/// </summary>
-	/// <param name="runnable">An action to be run every half-cycle, given the sim and whether it is the start or end.</param>
-	public static void RunAfterCycle(Action<Sim, bool> runnable) {
+    /// <summary>
+    /// Runs the given action for every part on each half-cycle.
+    /// </summary>
+    /// <param name="runnable">An action to be run for every part, given the sim, part, partSimState, and whether it is the start or end.</param>
+    public static void RunDuringCycle(Action<Sim, Part, PartSimState, bool> runnable)
+    {
+        ToRunDuringCycle.Add(runnable);
+    }
+
+    /// <summary>
+    /// Runs the given action at the end of every half-cycle.
+    /// </summary>
+    /// <param name="runnable">An action to be run every half-cycle, given the sim and whether it is the start or end.</param>
+    public static void RunAfterCycle(Action<Sim, bool> runnable) {
 		ToRunAfterCycle.Add(runnable);
 	}
 
