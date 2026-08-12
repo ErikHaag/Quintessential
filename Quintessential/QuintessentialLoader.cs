@@ -233,7 +233,7 @@ SomeZipIDontLike.zip");
                     bool waitingForDependencies = false;
                     foreach (ModMeta.Dependency dep in mod.Dependencies)
                     {
-                        if (!Contains(dep, loaded))
+                        if (Contains(dep, waiting))
                         {
                             waitingForDependencies = true;
                             break;
