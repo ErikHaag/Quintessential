@@ -6,6 +6,10 @@ class patch_AtomType
     // String atom type ID
     public string QuintAtomType;
 
+    public override string ToString() {
+        return QuintAtomType;
+    }
+
     [MonoModReplace]
     public override bool Equals(object obj)
     {

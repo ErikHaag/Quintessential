@@ -16,8 +16,8 @@ namespace Quintessential;
 public class QuintessentialLoader
 {
 
-    public static readonly string VersionString = "0.6.1";
-    public static readonly int VersionNumber = 15;
+    public static readonly string VersionString = "0.6.2";
+    public static readonly int VersionNumber = 16;
 
     public static string PathLightning;
     public static string PathMods, PathUnpackedMods;
@@ -230,25 +230,29 @@ SomeZipIDontLike.zip");
                 loadedThisInteration.Clear();
                 foreach (ModMeta mod in waiting)
                 {
+                    bool waitingForDependencies = false;
                     foreach (ModMeta.Dependency dep in mod.Dependencies)
                     {
                         if (!Contains(dep, loaded))
                         {
-                            // if deps are now loaded, load and remove from waiting list
-                            continue;
-                        }
-                    }
-
-                    bool waitingForDependencies = false;
-                    foreach (ModMeta.Dependency opDep in mod.OptionalDependencies)
-                    {
-                        if (!Contains(opDep, loaded) && Contains(opDep, waiting))
-                        {
-                            // if dependency is unloaded, but is waiting to be loaded, wait for it
                             waitingForDependencies = true;
                             break;
                         }
                     }
+
+                    if (!waitingForDependencies)
+                    {
+                        foreach (ModMeta.Dependency opDep in mod.OptionalDependencies)
+                        {
+                            if (!Contains(opDep, loaded) && Contains(opDep, waiting))
+                            {
+                                // if dependency is unloaded, but is waiting to be loaded, wait for it
+                                waitingForDependencies = true;
+                                break;
+                            }
+                        }
+                    }
+
                     if (waitingForDependencies)
                     {
                         continue;

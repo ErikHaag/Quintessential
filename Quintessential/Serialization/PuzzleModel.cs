@@ -287,6 +287,7 @@ public class PuzzleModel {
 			foreach(HexIndex hex in c.field_1440)
 				Shape.Add(new HexIndexM(hex));
 			// TODO: when are there ever more than two?
+			// Answer: never, the game crashes if there is.
 			PosA = new HexIndexM(c.field_1441[0].field_1879);
 			PosB = new HexIndexM(c.field_1441[1].field_1879);
 		}
