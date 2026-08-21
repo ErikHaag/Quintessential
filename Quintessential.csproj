@@ -13,7 +13,7 @@
 
 	<PropertyGroup>
 		<!-- Path to Opus Magnum folder, Contains Lightning.exe et.al -->
-		<OpusDir>C:\Program Files (x86)\Steam\steamapps\common\Opus Magnum Old</OpusDir>
+		<OpusDir>D:\SteamLibrary\steamapps\common\Opus Magnum Modded</OpusDir>
 	</PropertyGroup>
 	
   <ItemGroup>

@@ -15,20 +15,23 @@ public class PuzzleOption{
 	// part -> {ID}::{part ID}
 	
 	public string ID, Name, SectionName;
+	public int length;
 	public PuzzleOptionType Type;
 
 	private List<string> choices;
 
-	public static PuzzleOption BoolOption(string id, string name, string sectionName){
+	public static PuzzleOption BoolOption(string id, string name, string sectionName, int length = 2)
+    {
 		return new PuzzleOption{
 			ID = id,
 			Name = name,
 			SectionName = sectionName,
-			Type = PuzzleOptionType.Boolean
+			Type = PuzzleOptionType.Boolean,
+			length = length
 		};
 	}
-	
-	public static PuzzleOption MultiChoiceOption(string id, string name, string sectionName, params string[] choices){
+
+    public static PuzzleOption MultiChoiceOption(string id, string name, string sectionName, params string[] choices){
 		return new PuzzleOption{
 			ID = id,
 			Name = name,
@@ -121,5 +124,5 @@ public enum PuzzleOptionType{
 	Boolean,
 	MultiChoice,
 	Part,
-	Atom
+	Atom,
 }

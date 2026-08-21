@@ -609,6 +609,18 @@ SomeZipIDontLike.zip");
                                 campaign.field_2309[j].field_2314.Add(cItem);
                                 break;
                             }
+                        case "cutscene":
+                            {
+                                cItem = new(entry.ID, class_134.method_253(entry.Title, string.Empty), (enum_129)1, struct_18.field_1431, requirement, class_238.field_1992.field_970, class_238.field_1991.field_1830);
+                                break;
+
+                            }
+                        case "document":
+                            {
+                                cItem = new(entry.ID, class_134.method_253(entry.Title, string.Empty), (enum_129)1, struct_18.field_1431, requirement, class_238.field_1992.field_970, class_238.field_1991.field_1830);
+                                break;
+                               
+                            }    // copied from cutscene might be missing smth
                         default:
                             Logger.Log($"Campaign entry in {c.Name} has unknown type {entry.Type}, skipping");
                             continue;
