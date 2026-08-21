@@ -228,7 +228,7 @@ class patch_PuzzleEditorScreen{
 					var idx = 0;
 					foreach(var option in category){
 						// ReSharper disable once PossibleLossOfFraction
-						Vector2 pos = cursor + new Vector2(ruleSize.X * (idx % 4) + 5, ruleSize.Y * (idx / 4 + 1.5f));
+						Vector2 pos = cursor + new Vector2(ruleSize.X / 2f * (idx % 8) + 5, ruleSize.Y * (idx / 8 + 1.5f)); 
 						// TODO: other option types
 						if(option.Type == PuzzleOptionType.Boolean){
 							bool enabled = conv.CustomPermissions.Contains(option.ID);
@@ -238,20 +238,26 @@ class patch_PuzzleEditorScreen{
 								else
 									conv.CustomPermissions.Add(option.ID);
 								GameLogic.field_2434.field_2460.method_2241(myPuzzle);
-							}
-						}else if(option.Type == PuzzleOptionType.Atom){
+                                
+                            }
+							if (option.length == 0) idx += 2;
+							else idx += option.length;
+                            
+                        }
+						else if(option.Type == PuzzleOptionType.Atom){
 							var currentChoice = option.AtomIn(myPuzzle);
 							if(DrawAtomSelector(pos, option.Name, currentChoice ?? AtomTypes.field_1689))
 								UI.OpenScreen(new AtomSelectScreen("Select: " + option.Name, type => {
 									option.SetAtomIn(myPuzzle, type);
 									GameLogic.field_2434.field_2460.method_2241(myPuzzle);
 								}, currentChoice));
-						}
+                            idx++;
+                        }
 
-						idx++;
+						
 					}
 
-					var rows = (int)Math.Ceiling(idx / 4f);
+					var rows = (int)Math.Ceiling(idx / 8f);
 					cursor += new Vector2(0, ruleSize.Y * (rows + 2));
 				}
 

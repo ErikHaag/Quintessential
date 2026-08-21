@@ -113,11 +113,16 @@ public static class QApi {
 	/// <param name="id">The ID of the permission that is used during checks and saved to puzzle files.</param>
 	/// <param name="displayName">The name of the permission that is displayed in the UI, e.g. "Glyphs of Quintessence".</param>
 	/// <param name="sectionName">The name of the section that the permission will appear under.</param>
-	public static void AddPuzzlePermission(string id, string displayName, string sectionName = "Other Parts and Mechanisms"){
-		PuzzleOptions.Add(PuzzleOption.BoolOption(id, displayName, sectionName));
+	public static void AddPuzzlePermission(string id, string displayName, string sectionName = "Other Parts and Mechanisms", int length = 2){
+		PuzzleOptions.Add(PuzzleOption.BoolOption(id, displayName, sectionName, length));
 	}
+    public static void AddPuzzlePermission(string id, string displayName, string sectionName = "Other Parts and Mechanisms")
+    {
+        PuzzleOptions.Add(PuzzleOption.BoolOption(id, displayName, sectionName));
+    }
 
-	public static void AddPuzzleOption(PuzzleOption option){
+
+    public static void AddPuzzleOption(PuzzleOption option){
 		PuzzleOptions.Add(option);
 	}
 
